@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gustavoalcantara.com/sitemap.xml
