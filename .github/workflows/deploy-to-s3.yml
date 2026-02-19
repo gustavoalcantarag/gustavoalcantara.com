@@ -24,7 +24,15 @@ jobs:
 
       - name: Invalidate CloudFront cache
         run: |
-          aws cloudfront create-invalidation --distribution-id EFC3MKK8HJCHG --paths "/others/TodaysMatches/todaysmatches.html" "/index.html"
+          aws cloudfront create-invalidation --distribution-id EFC3MKK8HJCHG --paths \
+            "/others/TodaysMatches/todaysmatches.html" \
+            "/index.html" \
+            "/gusapps/GusPadSoundboard/en/terms.html" \
+            "/gusapps/GusPadSoundboard/en/privacy.html" \
+            "/gusapps/GusPadSoundboard/terms.html" \
+            "/gusapps/GusPadSoundboard/privacy.html" \
+            "/gusapps/GusPadSoundboard/en/index.html" \
+            "/gusapps/GusPadSoundboard/index.html"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
