@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="GusPad Soundboard - The best soundboard app for iOS and Android. Create your own sounds, effects and fun. Available on the App Store and Google Play. Developed by Gustavo Alcántara.">
+    <meta name="description" content="GusPad Soundboard for iPhone: play sounds instantly with 48 pads, load your own audio, and organize up to 8 banks with Premium.">
     <meta name="keywords" content="soundboard, drum pad, sounds, iOS, Android, app, sound effects, music, mp3, wav, guspad, gustavo alcantara, soundboard app, launchpad, beat maker, sampler, sound effects app, sound buttons, audio pads, dj sounds, meme sounds, streaming sounds, podcast sounds, twitch sounds, youtube sounds, tiktok sounds, free soundboard, sound pad, custom soundboard">
     <meta name="author" content="Gustavo Alcántara - GusApps">
     <meta name="robots" content="index, follow">
@@ -23,7 +23,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/index.html">
     <meta property="og:title" content="GusPad Soundboard - Sound Effects App for iOS and Android">
-    <meta property="og:description" content="Create, customize and play your favorite sounds. Up to 192 pads available. Perfect for streams, podcasts and pranks.">
+    <meta property="og:description" content="Play sounds instantly with 48 pads, load custom audio, and unlock 8 banks, search, Move mode, and 384 positions with Premium.">
     <meta property="og:image" content="https://gustavoalcantara.com/gusapps/GusPadSoundboard/img/GusPad.png">
     <meta property="og:image:width" content="512">
     <meta property="og:image:height" content="512">
@@ -44,7 +44,7 @@
         "name": "GusPad Soundboard",
         "operatingSystem": ["iOS", "Android"],
         "applicationCategory": "EntertainmentApplication",
-        "description": "GusPad Soundboard - The best soundboard app for iOS and Android. Create, customize and play your favorite sounds.",
+        "description": "Soundboard for iPhone with 48 pads, custom sounds, search, Premium banks, and volume control up to 150%.",
         "image": "https://gustavoalcantara.com/gusapps/GusPadSoundboard/img/GusPad.png",
         "screenshot": "https://gustavoalcantara.com/gusapps/GusPadSoundboard/img/iphone.png",
         "author": {
@@ -57,13 +57,13 @@
                 "@type": "Offer",
                 "price": "0",
                 "priceCurrency": "USD",
-                "description": "Free version with 24 pads"
+                "description": "Free version with 48 pads and 48 default sounds"
             },
             {
                 "@type": "Offer",
                 "price": "4.99",
                 "priceCurrency": "USD",
-                "description": "Premium version with 192 pads and no ads"
+                "description": "Premium version with 8 banks, 384 positions, 192 included sounds, and no ads"
             }
         ],
         "downloadUrl": [
@@ -77,7 +77,7 @@
             "ratingCount": "1"
         }
     }
-    </script>>
+    </script>
     
     <title>GusPad Soundboard - Sound Effects, DJ Pads, Soundboard App for iOS and Android</title>
     
@@ -148,7 +148,7 @@
             <div class="feature-card">
                 <div class="feature-icon">📁</div>
                 <h3>Custom Sounds</h3>
-                <p>Load your own audio files: MP3, WAV, M4A, AAC, CAF and AIFF.</p>
+                <p>Load your own MP3, WAV, M4A, or AAC files. The app validates that they are readable and no longer than 5 minutes.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🏦</div>
@@ -158,22 +158,32 @@
             <div class="feature-card">
                 <div class="feature-icon">🔊</div>
                 <h3>Volume Control</h3>
-                <p>Adjust the individual volume of each pad from 0% to 125% for total control.</p>
+                <p>Adjust each pad's individual volume from 0% to 150% to balance your sounds.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
                 <h3>Progress Bar</h3>
-                <p>Visualize the sound duration while it plays on each pad.</p>
+                <p>See sound progress and duration while it plays, even after returning to a Premium bank.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📤</div>
                 <h3>Export Sounds</h3>
-                <p>Share your sounds with friends or backup your collections (Premium version).</p>
+                <p>Share your audio files with their original names from each pad's options (Premium version).</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🌍</div>
                 <h3>Multi-language</h3>
                 <p>Available in English and Spanish for a complete experience.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔎</div>
+                <h3>Global Search</h3>
+                <p>Find sounds across all your banks in real time and jump directly to a result's bank (Premium).</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">↔️</div>
+                <h3>Move Mode</h3>
+                <p>Rearrange and swap sounds within or between banks with drag and drop (Premium).</p>
             </div>
         </div>
     </section>
@@ -189,12 +199,14 @@
                     <h3>Free</h3>
                     <div class="price">$0 <span>/ forever</span></div>
                     <ul>
-                        <li>24 sound pads</li>
-                        <li>24 default sounds</li>
+                        <li>48 sound pads</li>
+                        <li>48 default sounds</li>
                         <li>Load custom sounds</li>
+                        <li>Bulk loading from Files</li>
                         <li>Visual progress bar</li>
-                        <li>Volume control per pad</li>
+                        <li>Volume control per pad (0-150%)</li>
                         <li class="disabled">8 sound banks</li>
+                        <li class="disabled">Global Search and Move mode</li>
                         <li class="disabled">Export sounds</li>
                         <li class="disabled">No ads</li>
                     </ul>
@@ -210,11 +222,13 @@
                     <h3>Premium</h3>
                     <div class="price">$4.99 <span>USD / one-time</span></div>
                     <ul>
-                        <li>24 pads per bank</li>
-                        <li>8 sound banks (192 pads)</li>
-                        <li>96 premium sounds included</li>
+                        <li>48 pads per bank</li>
+                        <li>8 sound banks (384 positions)</li>
+                        <li>192 downloadable Premium sounds</li>
+                        <li>Real-time global search</li>
+                        <li>Move mode across pads and banks</li>
                         <li>Export and share sounds</li>
-                        <li>Volume control per pad (0-125%)</li>
+                        <li>Volume control per pad (0-150%)</li>
                         <li>No ads</li>
                         <li>All features unlocked</li>
                         <li>Future updates included</li>
@@ -233,7 +247,7 @@
     <!-- Sounds Preview -->
     <section class="sounds-preview" id="sounds">
         <h2 class="section-title">Included Sounds</h2>
-        <p class="section-subtitle">Over 96 premium sounds ready to use</p>
+        <p class="section-subtitle">48 included free sounds and 192 Premium sounds ready to use</p>
         
         <div class="sounds-grid">
             <span class="sound-tag">🎺 Air horn</span>
@@ -333,7 +347,7 @@
             <div class="footer-section">
                 <h4>🎵 GusPad Soundboard</h4>
                 <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                    The best soundboard app for iOS and Android. Create, customize, and have fun with your favorite sounds.
+                    A soundboard for iPhone with fast pads, custom sounds, and Premium tools to organize your collection.
                 </p>
             </div>
             <div class="footer-section">
@@ -360,7 +374,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 GusApps. All rights reserved. | Version 1.6</p>
+            <p>© 2026 GusApps. All rights reserved. | Version 2.6</p>
         </div>
     </footer>
 
