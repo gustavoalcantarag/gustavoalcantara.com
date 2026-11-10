@@ -1,71 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <!-- Página principal del portafolio -->
   <url>
     <loc>https://gustavoalcantara.com/</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-11-10</lastmod>
   </url>
-  <!-- GusPad Soundboard - Español (canónica) -->
   <url>
-    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/index.html</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/index.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/index.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/index.html"/>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/"/>
+    <lastmod>2026-11-10</lastmod>
   </url>
-  <!-- GusPad Soundboard - English -->
   <url>
-    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/index.html</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/index.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/index.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/index.html"/>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/"/>
+    <lastmod>2026-11-10</lastmod>
   </url>
-  <!-- Política de Privacidad - Español -->
   <url>
-    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy.html</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy.html"/>
-    <lastmod>2026-02-18</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
+    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy/"/>
+    <lastmod>2026-10-30</lastmod>
   </url>
-  <!-- Privacy Policy - English -->
   <url>
-    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/privacy.html</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy.html"/>
-    <lastmod>2026-02-18</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
+    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/privacy/"/>
+    <lastmod>2026-10-30</lastmod>
   </url>
-  <!-- Términos de Uso - Español -->
   <url>
-    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms.html</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/terms.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms.html"/>
-    <lastmod>2026-02-18</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
+    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms/"/>
+    <lastmod>2026-10-30</lastmod>
   </url>
-  <!-- Terms of Use - English -->
   <url>
-    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/terms.html</loc>
-    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/terms.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms.html"/>
-    <lastmod>2026-02-18</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
+    <loc>https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/en/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gustavoalcantara.com/gusapps/GusPadSoundboard/terms/"/>
+    <lastmod>2026-10-30</lastmod>
   </url>
 </urlset>
