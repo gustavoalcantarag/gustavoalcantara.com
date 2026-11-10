@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Selecciona una liga y un partido para consultar un pronóstico deportivo estadístico.">
+    <meta name="robots" content="noindex, follow">
+    <title>Pronósticos deportivos | Gustavo Alcántara</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <main class="app-shell">
+        <header class="page-header">
+            <a href="/" class="brand">Gustavo Alcántara</a>
+            <span class="status">MVP en desarrollo</span>
+        </header>
+
+        <section class="intro" aria-labelledby="page-title">
+            <p class="eyebrow">Análisis estadístico</p>
+            <h1 id="page-title">Elige un partido</h1>
+            <p>Selecciona una liga, revisa sus próximos encuentros y elige un versus para consultar sus datos disponibles.</p>
+        </section>
+
+        <section class="selector-card" aria-labelledby="selector-title">
+            <h2 id="selector-title">Partido</h2>
+            <label for="league-select">Liga</label>
+            <select id="league-select">
+                <option value="">Cargando ligas...</option>
+            </select>
+
+            <label for="fixture-select">Próximos partidos</label>
+            <select id="fixture-select" disabled>
+                <option value="">Primero selecciona una liga</option>
+            </select>
+
+            <button id="analyze-button" type="button" disabled>Analizar partido</button>
+            <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="prediction-panel" class="prediction-card" aria-labelledby="prediction-title" hidden>
+            <h2 id="prediction-title">Pronóstico</h2>
+            <p id="prediction-match" class="match-name"></p>
+            <div id="prediction-results" class="results-grid"></div>
+            <p class="disclaimer">Los valores son probabilidades o estimaciones estadísticas. No garantizan un resultado.</p>
+        </section>
+    </main>
+</body>
+</html>
