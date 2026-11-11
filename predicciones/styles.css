@@ -188,26 +188,6 @@ a:focus-visible {
     min-width: 0;
 }
 
-.prediction-details {
-    grid-column: 1 / -1;
-    padding: .8rem 1rem;
-    border: 1px solid #dfe4ec;
-    border-radius: .7rem;
-    background: #fff;
-}
-
-.prediction-details summary {
-    color: #536176;
-    cursor: pointer;
-    font-weight: 650;
-}
-
-.prediction-details span {
-    display: block;
-    margin-top: .45rem;
-    color: #536176;
-    line-height: 1.4;
-}
 
 .disclaimer {
     margin: 1.25rem 0 0;
