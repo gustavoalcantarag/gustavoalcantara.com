@@ -14,7 +14,11 @@ function setFeedback(message) {
 
 async function requestJson(path) {
     const response = await fetch(`${API_BASE}${path}`, {
-        headers: { Accept: "application/json" }
+        cache: "no-store",
+        headers: {
+            Accept: "application/json",
+            "Cache-Control": "no-cache"
+        }
     });
     const payload = await response.json();
     if (!response.ok) {
@@ -83,7 +87,7 @@ async function analyzeFixture() {
     setFeedback("Consultando datos...");
 
     try {
-        const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}`);
+        const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=9`);
         predictionMatch.textContent = prediction.match;
         predictionResults.replaceChildren();
         Object.entries(prediction.metrics).forEach(([label, value]) => {
