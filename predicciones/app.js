@@ -93,6 +93,9 @@ async function analyzeFixture() {
         Object.entries(prediction.metrics).forEach(([label, value]) => {
             const result = document.createElement("div");
             result.className = "result";
+            if (label.includes("promedio")) result.classList.add("average-result");
+            if (label === "Resultado") result.classList.add("outcome-result");
+            if (label === "Goles") result.classList.add("goals-result");
             const title = document.createElement("strong");
             title.textContent = label;
             const detail = document.createElement("span");

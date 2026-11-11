@@ -130,6 +130,12 @@ a:focus-visible {
     font-weight: 650;
 }
 
+.prediction-note {
+    margin: -.35rem 0 1rem;
+    color: #69758a;
+    font-size: .82rem;
+}
+
 .results-grid {
     display: grid;
     gap: .75rem;
@@ -137,9 +143,26 @@ a:focus-visible {
 }
 
 .result {
+    min-height: 7rem;
     padding: 1rem;
+    border: 1px solid transparent;
     border-radius: .7rem;
     background: #f3f5f8;
+}
+
+.result.outcome-result {
+    border-color: #e6a5b6;
+    background: #fff7f9;
+}
+
+.result.goals-result {
+    border-color: #c9d9f2;
+    background: #f5f8ff;
+}
+
+.result.average-result {
+    border-color: #d7e5dc;
+    background: #f5faf6;
 }
 
 .result strong,
@@ -153,6 +176,7 @@ a:focus-visible {
 
 .result span {
     color: #536176;
+    line-height: 1.45;
 }
 
 .disclaimer {
