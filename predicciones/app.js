@@ -87,7 +87,7 @@ async function analyzeFixture() {
     setFeedback("Consultando datos...");
 
     try {
-        const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=9`);
+        const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
         predictionMatch.textContent = prediction.match;
         predictionResults.replaceChildren();
         Object.entries(prediction.metrics).forEach(([label, value]) => {
