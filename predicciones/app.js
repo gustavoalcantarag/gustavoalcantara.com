@@ -34,6 +34,43 @@ function addOption(select, value, label) {
     select.append(option);
 }
 
+function addResult(title, lines, className = "") {
+    const result = document.createElement("div");
+    result.className = `result ${className}`.trim();
+    const heading = document.createElement("strong");
+    heading.textContent = title;
+    result.append(heading);
+    lines.forEach((line) => {
+        const detail = document.createElement("span");
+        detail.textContent = line;
+        result.append(detail);
+    });
+    predictionResults.append(result);
+}
+
+function percentage(value) {
+    return value === null || value === undefined ? "Datos insuficientes" : `${value}%`;
+}
+
+function marketLines(market, names) {
+    if (!market || !market.total) return ["Datos insuficientes"];
+    const lines = [];
+    [
+        ["Total", market.total],
+        [names.home, market.home],
+        [names.away, market.away]
+    ].forEach(([name, values]) => {
+        if (!values) return;
+        const average = market.averages?.[name === "Total" ? "total" : name === names.home ? "home" : "away"];
+        lines.push(`${name}: promedio ${average}`);
+        values.forEach((value) => {
+            lines.push(`Más de ${value.line}: ${value.over}%`);
+            lines.push(`Menos de ${value.line}: ${value.under}%`);
+        });
+    });
+    return lines;
+}
+
 async function loadLeagues() {
     try {
         const { leagues } = await requestJson("/leagues");
@@ -90,19 +127,43 @@ async function analyzeFixture() {
         const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
         predictionMatch.textContent = prediction.match;
         predictionResults.replaceChildren();
-        Object.entries(prediction.metrics).forEach(([label, value]) => {
-            const result = document.createElement("div");
-            result.className = "result";
-            if (label.includes("promedio")) result.classList.add("average-result");
-            if (label === "Resultado") result.classList.add("outcome-result");
-            if (label === "Goles") result.classList.add("goals-result");
-            const title = document.createElement("strong");
-            title.textContent = label;
-            const detail = document.createElement("span");
-            detail.textContent = value;
-            result.append(title, detail);
-            predictionResults.append(result);
-        });
+        const names = {
+            home: prediction.probabilities?.home?.name || "Local",
+            away: prediction.probabilities?.away?.name || "Visitante"
+        };
+        addResult("Resultado", prediction.probabilities
+            ? [
+                `${names.home}: ${percentage(prediction.probabilities.home.value)}`,
+                `Empate: ${percentage(prediction.probabilities.draw)}`,
+                `${names.away}: ${percentage(prediction.probabilities.away.value)}`
+            ]
+            : ["Datos insuficientes"], "outcome-result");
+        addResult("Marcador exacto", prediction.exactScores?.length
+            ? prediction.exactScores.map((score) => `${score.score}: ${score.probability}%`)
+            : ["Datos insuficientes"], "score-result");
+        const goals = prediction.goals;
+        addResult("Goles", goals?.markets?.home && goals?.markets?.away && goals?.markets?.total
+            ? [
+                `${names.home}: promedio ${goals.home.toFixed(2)}`,
+                ...goals.markets.home.flatMap((line) => [
+                    `Más de ${line.line}: ${line.over}%`,
+                    `Menos de ${line.line}: ${line.under}%`
+                ]),
+                `${names.away}: promedio ${goals.away.toFixed(2)}`,
+                ...goals.markets.away.flatMap((line) => [
+                    `Más de ${line.line}: ${line.over}%`,
+                    `Menos de ${line.line}: ${line.under}%`
+                ]),
+                `Total: promedio ${goals.total.toFixed(2)}`,
+                ...goals.markets.total.flatMap((line) => [
+                    `Más de ${line.line}: ${line.over}%`,
+                    `Menos de ${line.line}: ${line.under}%`
+                ])
+            ]
+            : ["Datos insuficientes"], "goals-result");
+        addResult("Corners", marketLines(prediction?.corners, names), "average-result");
+        addResult("Tarjetas", marketLines(prediction?.cards, names), "average-result");
+        addResult("Tiros al arco", marketLines(prediction?.shots, names), "average-result");
         predictionPanel.hidden = false;
         setFeedback("");
     } catch (error) {

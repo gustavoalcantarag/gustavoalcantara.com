@@ -139,7 +139,7 @@ a:focus-visible {
 .results-grid {
     display: grid;
     gap: .75rem;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .result {
@@ -177,6 +177,15 @@ a:focus-visible {
 .result span {
     color: #536176;
     line-height: 1.45;
+}
+
+.result.score-result {
+    border-color: #e2d4b8;
+    background: #fffaf1;
+}
+
+.result.goals-result {
+    min-width: 0;
 }
 
 .disclaimer {
