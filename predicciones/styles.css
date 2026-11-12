@@ -136,6 +136,22 @@ a:focus-visible {
     font-size: .82rem;
 }
 
+.prediction-sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: .82rem;
+}
+
+.prediction-sources a {
+    color: #536176;
+    text-decoration: underline;
+    text-underline-offset: .15em;
+}
+
 .results-grid {
     display: grid;
     gap: .75rem;

@@ -7,6 +7,7 @@ const feedback = document.querySelector("#feedback");
 const predictionPanel = document.querySelector("#prediction-panel");
 const predictionMatch = document.querySelector("#prediction-match");
 const predictionNote = document.querySelector("#prediction-note");
+const predictionSources = document.querySelector("#prediction-sources");
 const predictionResults = document.querySelector("#prediction-results");
 
 function setFeedback(message) {
@@ -120,6 +121,24 @@ async function analyzeFixture() {
         predictionNote.textContent = prediction.source
             ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
             : "No hay suficiente histórico verificable para generar este pronóstico.";
+        predictionSources.replaceChildren();
+        (prediction.sources || []).forEach((source) => {
+            try {
+                const url = new URL(source);
+                if (!["http:", "https:"].includes(url.protocol)) return;
+                const item = document.createElement("li");
+                const link = document.createElement("a");
+                link.href = url.href;
+                link.textContent = url.hostname;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                item.append(link);
+                predictionSources.append(item);
+            } catch {
+                return;
+            }
+        });
+        predictionSources.hidden = predictionSources.childElementCount === 0;
         predictionResults.replaceChildren();
         const names = {
             home: prediction.probabilities?.home?.name || "Local",
