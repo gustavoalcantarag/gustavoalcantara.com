@@ -6,6 +6,7 @@ const analyzeButton = document.querySelector("#analyze-button");
 const feedback = document.querySelector("#feedback");
 const predictionPanel = document.querySelector("#prediction-panel");
 const predictionMatch = document.querySelector("#prediction-match");
+const predictionNote = document.querySelector("#prediction-note");
 const predictionResults = document.querySelector("#prediction-results");
 
 function setFeedback(message) {
@@ -116,6 +117,9 @@ async function analyzeFixture() {
     try {
         const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
         predictionMatch.textContent = prediction.match;
+        predictionNote.textContent = prediction.source
+            ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
+            : "No hay suficiente histórico verificable para generar este pronóstico.";
         predictionResults.replaceChildren();
         const names = {
             home: prediction.probabilities?.home?.name || "Local",
