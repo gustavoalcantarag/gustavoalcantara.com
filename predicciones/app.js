@@ -182,7 +182,9 @@ async function analyzeFixture() {
     try {
         const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
         predictionMatch.textContent = prediction.match;
-        predictionNote.textContent = prediction.confidence === "very_low"
+        predictionNote.textContent = prediction.basis === "competition_baseline"
+            ? `Pronóstico de muy baja confianza: se basa solo en el promedio de goles de ${prediction.sample?.league || 0} partidos recientes de esta competición, no en el rendimiento de estos equipos. ${prediction.fallbackNotice || ""} Solo estima goles y resultado; no hay datos para corners, tarjetas o tiros al arco.`
+            : prediction.confidence === "very_low"
             ? `Pronóstico de muy baja confianza: se basa en ${prediction.sample?.home || 0} partidos recientes del local y ${prediction.sample?.away || 0} del visitante, de las competiciones disponibles. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
             : prediction.confidence === "low"
                 ? `Pronóstico de baja confianza: usa cinco partidos recientes por equipo de otras competiciones. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
