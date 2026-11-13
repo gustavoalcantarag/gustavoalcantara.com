@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruta Backend Java · Prepara tu entrevista</title>
+<meta name="description" content="Ruta gamificada para prepararte a entrevistas técnicas de Backend Java en banca.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☕</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap">
+<style>
+:root{--bg:#EEF2F7;--card:#fff;--ink:#1B2A41;--mut:#6B7A90;--line:#D5DDE8;--blue:#2B6CB0;--blued:#1F4F85;--amb:#F2A33A;--ambd:#C47F1D;--ok:#2F9E6B;--okbg:#DDF3E8;--bad:#D64545;--badbg:#FBE1E1;--lock:#C9D2DE}
+@media(prefers-color-scheme:dark){:root{--bg:#0F1724;--card:#192434;--ink:#E8EEF7;--mut:#93A1B7;--line:#2B3A50;--blue:#4C93E0;--blued:#2F6FB5;--okbg:#14382B;--badbg:#401C1F;--lock:#2B3A50}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:700 16px/1.5 Nunito,ui-rounded,system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:2px solid var(--line);padding:10px 16px}
+.hd{max-width:560px;margin:auto;display:flex;align-items:center;gap:14px}
+.hd h1{font-size:18px;margin:0;flex:1;font-weight:900}
+.st{font-weight:900;white-space:nowrap}
+.prog{max-width:560px;margin:8px auto 0;height:10px;background:var(--line);border-radius:9px;overflow:hidden}
+#bar{height:100%;width:0;background:var(--ok);border-radius:9px;transition:width .5s}
+main{max-width:560px;margin:auto;padding:24px 16px 80px}
+.intro{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:28px;color:var(--mut)}
+.intro b{color:var(--ink)}
+.row{display:flex;flex-direction:column;align-items:center;margin-bottom:26px}
+.node{width:84px;height:84px;border-radius:50%;border:0;font-size:36px;cursor:pointer;color:#fff;background:var(--blue);box-shadow:0 7px 0 var(--blued);transition:transform .1s,box-shadow .1s}
+.node:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 var(--blued)}
+.node.done{background:var(--amb);box-shadow:0 7px 0 var(--ambd)}
+.node.lock{background:var(--lock);box-shadow:0 7px 0 var(--line);cursor:not-allowed;font-size:28px}
+.node.open{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 7px 0 var(--blued),0 0 0 10px rgba(76,147,224,.25)}}
+.lbl{margin-top:14px;text-align:center;font-weight:900}
+.lbl small{display:block;color:var(--mut);font-weight:700}
+.stars{color:var(--amb);letter-spacing:2px}
+#modal{display:none;position:fixed;inset:0;background:var(--bg);z-index:10;overflow:auto}
+#modal.on{display:block}
+.card{max-width:560px;margin:auto;padding:16px;min-height:100%;display:flex;flex-direction:column}
+.card.c{justify-content:center;text-align:center;align-items:center;gap:8px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.x{background:none;border:0;font:900 22px Nunito,sans-serif;color:var(--mut);cursor:pointer}
+.pb{flex:1;height:14px;background:var(--line);border-radius:9px;overflow:hidden}
+.pb i{display:block;height:100%;background:var(--ok);border-radius:9px;transition:width .4s}
+h2{font-size:22px;line-height:1.3;margin:0 0 20px}
+code{background:var(--line);padding:1px 6px;border-radius:6px;font-size:.9em}
+.opt{display:block;width:100%;text-align:left;margin-bottom:12px;padding:14px 16px;font:700 16px Nunito,sans-serif;color:var(--ink);background:var(--card);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.opt:focus-visible,.go:focus-visible,.node:focus-visible,.x:focus-visible,.rs:focus-visible{outline:3px solid var(--amb);outline-offset:3px}
+#fb{margin-top:auto;padding:16px;border-radius:16px}
+#fb.good{background:var(--okbg);color:var(--ok)}
+#fb.no{background:var(--badbg);color:var(--bad)}
+#fb p{color:var(--ink);margin:6px 0 14px;font-weight:600}
+.go{width:100%;padding:14px;border:0;border-radius:14px;background:var(--ok);color:#fff;font:900 17px Nunito,sans-serif;cursor:pointer;box-shadow:0 4px 0 #1F7A52}
+#fb.no .go{background:var(--bad);box-shadow:0 4px 0 #A33030}
+.card.c .go{max-width:320px;margin-top:20px}
+.card.c h1{font-size:30px;margin:0}
+.rs{display:block;margin:30px auto 0;background:none;border:0;color:var(--mut);font:700 14px Nunito,sans-serif;text-decoration:underline;cursor:pointer}
+.acts{display:flex;gap:10px;margin-bottom:28px}
+.act{flex:1;padding:12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--ink);font:900 15px Nunito,sans-serif;cursor:pointer}
+.act:hover{border-color:var(--blue)}
+.act:focus-visible{outline:3px solid var(--amb);outline-offset:3px}
+.mut{color:var(--mut);margin:0 0 8px}
+.tools{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.tools .rs{margin:0}
+textarea{width:100%;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:600 15px Nunito,sans-serif;resize:vertical;margin-bottom:14px}
+.ck{display:block;padding:10px 12px;margin-bottom:8px;background:var(--card);border:2px solid var(--line);border-radius:12px;font-weight:600;cursor:pointer}
+.ck input{margin-right:8px;accent-color:var(--ok)}
+.rr{display:flex;justify-content:space-between;padding:10px 14px;margin-bottom:8px;background:var(--card);border:2px solid var(--line);border-radius:12px}
+.g{color:var(--ok)}.r{color:var(--bad)}
+#pt{margin-bottom:14px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd"><h1>☕ Ruta Backend Java</h1><span class="st">🔥 <span id="sk">0</span></span><span class="st">⚡ <span id="xp">0</span> XP</span></div>
+  <div class="prog" role="progressbar" aria-label="Progreso total"><div id="bar"></div></div>
+</header>
+<main>
+  <div class="intro"><b>Completa cada nivel para desbloquear el siguiente.</b> Tienes 3 vidas por nivel: si las pierdes, repasas y vuelves a intentarlo. Tu progreso se guarda en este navegador.</div>
+  <div class="acts"><button class="act" onclick="sim()">⏱️ Simulacro</button><button class="act" id="ob" onclick="oral(0)">🎙️ Práctica oral</button></div>
+  <div id="path"></div>
+  <div class="tools"><button class="rs" onclick="exp()">Exportar progreso</button><button class="rs" onclick="document.getElementById('fi').click()">Importar progreso</button><button class="rs" onclick="reset()">Reiniciar progreso</button><input id="fi" type="file" accept="application/json" hidden onchange="imp(this.files[0])"></div>
+</main>
+<div id="modal" role="dialog" aria-modal="true"></div>
+
+<script>
+/* ===== CONTENIDO =====
+   Para agregar preguntas: [enunciado, [opciones], índiceCorrecto, explicación]
+   Para agregar niveles: añade un objeto {t:título, i:emoji, q:[...]} */
+const U=[
+{t:"Java moderno",i:"☕",q:[
+["¿Qué devuelve <code>Optional.map</code> cuando el Optional está vacío?",["Lanza NullPointerException","Un Optional vacío","null","Un Optional con valor por defecto"],1,"map solo se aplica si hay valor; si no, devuelve Optional.empty() sin fallar."],
+["¿Qué ventaja principal tiene un <code>record</code> (Java 16+)?",["Es mutable por defecto","Reduce boilerplate: constructor, getters, equals y hashCode","Permite herencia múltiple","Es más rápido que una clase"],1,"Un record es un contenedor de datos inmutable con todo lo básico generado."],
+["¿Qué diferencia a <code>flatMap</code> de <code>map</code> en un Stream?",["No hay diferencia","flatMap aplana streams anidados en uno solo","map solo funciona con listas","flatMap siempre es paralelo"],1,"Si cada elemento produce un Stream, flatMap los une en uno; map dejaría un Stream de Streams."]]},
+{t:"SOLID y patrones",i:"🧩",q:[
+["Una clase valida datos, guarda en BD y envía correos. ¿Qué principio viola?",["Open/Closed","Single Responsibility","Liskov","Interface Segregation"],1,"Tiene tres razones para cambiar. Se separa en clases con una sola responsabilidad."],
+["Necesitas cambiar en tiempo de ejecución el algoritmo que calcula comisiones. ¿Qué patrón usas?",["Singleton","Strategy","Prototype","Facade"],1,"Strategy encapsula algoritmos intercambiables detrás de una interfaz común."],
+["¿Qué patrón añade comportamiento a un objeto sin modificar su clase?",["Decorator","Adapter","Builder","Observer"],0,"Decorator envuelve el objeto original e implementa su misma interfaz."]]},
+{t:"Spring Boot y JPA",i:"🌱",q:[
+["¿Qué es el problema N+1 en JPA?",["Una consulta principal más N consultas extra por relaciones lazy","N tablas sin índice","N transacciones anidadas","Un error del pool de conexiones"],0,"Se resuelve con join fetch, @EntityGraph o consultas con proyecciones."],
+["¿Qué scope tienen por defecto los beans en Spring?",["prototype","singleton","request","session"],1,"Hay una única instancia por contenedor. Por eso los beans deben ser sin estado mutable."],
+["Llamas a un método <code>@Transactional</code> desde otro método de la misma clase. ¿Qué pasa?",["Funciona igual","No se aplica la transacción (self-invocation)","Lanza error al arrancar","Crea una transacción nueva"],1,"Spring usa proxies; una llamada interna se salta el proxy y la anotación no actúa."]]},
+{t:"Programación reactiva",i:"⚡",q:[
+["¿Qué ocurre si nadie se suscribe a un <code>Mono</code> o <code>Flux</code>?",["Se ejecuta igual","Nada: es lazy","Lanza excepción","Corre en otro hilo"],1,"Hasta que hay un subscribe (o WebFlux lo hace por ti), no se ejecuta nada."],
+["¿Cuándo usas <code>flatMap</code> en vez de <code>map</code> en Reactor?",["Cuando la función devuelve un Mono/Flux (operación asíncrona)","Cuando la función es síncrona","Nunca","Solo con listas"],0,"map transforma valores; flatMap aplana publishers internos."],
+["¿Por qué no debes llamar <code>block()</code> dentro de un flujo WebFlux?",["Consume mucha memoria","Bloquea los pocos hilos del event loop y degrada todo el servicio","Falla la compilación","Rompe los tests"],1,"Un event loop atiende miles de peticiones con pocos hilos; bloquear uno los frena a todos."]]},
+{t:"Microservicios resilientes",i:"🛡️",q:[
+["¿Qué estados tiene un Circuit Breaker?",["Cerrado, abierto y semiabierto","Activo, pausado y detenido","Nuevo, ejecutando y fallido","Primario, secundario y réplica"],0,"Cerrado deja pasar; abierto corta tras muchos fallos; semiabierto prueba si el servicio se recuperó."],
+["En una SAGA falla el tercer paso. ¿Qué haces?",["Un rollback distribuido con 2PC","Ejecutas transacciones compensatorias de los pasos anteriores","Ignoras el error","Reinicias los servicios"],1,"Cada paso tiene una acción que lo deshace (ej. reembolsar un cobro)."],
+["¿Cómo evitas cobrar dos veces ante un reintento de un pago?",["Idempotency key por operación","Aumentar el timeout","Prohibir reintentos","Agregar más instancias"],0,"El servidor guarda la clave y devuelve el resultado original si la ve de nuevo."]]},
+{t:"Testing y calidad",i:"🧪",q:[
+["¿Cuál es el ciclo de TDD?",["Red, Green, Refactor","Build, Deploy, Test","Plan, Code, Release","Mock, Stub, Spy"],0,"Escribes un test que falla, haces que pase con lo mínimo y luego refactorizas."],
+["¿Para qué sirve Mockito?",["Para simular dependencias y aislar la unidad bajo prueba","Para generar getters y setters","Para analizar la cobertura","Para desplegar contenedores"],0,"Permite probar un servicio sin su BD o API real y verificar interacciones."],
+["¿Qué evalúa el quality gate de SonarQube?",["Solo el tiempo de compilación","Umbrales de bugs, vulnerabilidades, duplicación y cobertura","El número de commits","El tamaño del repositorio"],1,"Si no se cumplen, el pipeline puede bloquear el pase a producción."]]},
+{t:"Seguridad y OWASP",i:"🔐",q:[
+["¿Cómo previenes la inyección SQL?",["Consultas parametrizadas (PreparedStatement / JPA)","Ocultando los nombres de tablas","Cifrando la base de datos","Usando solo HTTPS"],0,"Los parámetros viajan separados del SQL, así que nunca se interpretan como código."],
+["¿Dónde guardas la contraseña de la BD en un entorno Azure?",["En application.properties versionado","En un gestor de secretos como Azure Key Vault","Dentro del código","En un collection de Postman"],1,"Los secretos se inyectan en tiempo de ejecución y no se versionan."],
+["Un JWT sirve para…",["Transportar claims firmados y autenticar sin sesión en servidor","Cifrar la base de datos","Reemplazar HTTPS","Guardar sesiones en memoria"],0,"Va firmado; valida firma y expiración. No es secreto, así que no pongas datos sensibles."]]},
+{t:"Azure y CI/CD",i:"☁️",q:[
+["¿Para qué sirve AKS?",["Orquestar contenedores con Kubernetes administrado","Guardar secretos","Almacenar archivos","Resolver DNS"],0,"Azure Kubernetes Service ejecuta y escala tus microservicios en contenedores."],
+["¿Qué hace Azure API Management?",["Publica, protege y gobierna APIs (autenticación, rate limit, políticas)","Compila proyectos Java","Almacena imágenes Docker","Monitorea la CPU"],0,"Actúa como puerta de entrada única para tus APIs."],
+["¿Cuál es un orden típico de pipeline CI/CD?",["Build → tests → análisis Sonar → artefacto en Nexus/ACR → despliegue","Despliegue → build → tests","Sonar → despliegue → build","Tests → despliegue → compilar"],0,"Se valida la calidad antes de generar el artefacto y desplegarlo."]]},
+{t:"Arquitectura y patrones II",i:"🏛️",q:[
+["En Cache Aside, ¿qué hace la aplicación cuando el dato no está en caché?",["Lo lee de la BD, lo guarda en caché y lo devuelve","Devuelve un error","Escribe siempre primero en caché","Borra el registro en la BD"],0,"La app controla la caché: consulta, y si falla, carga desde la BD y la rellena. Debes definir cuándo invalidarla."],
+["¿Qué propone CQRS?",["Separar el modelo de escritura (comandos) del de lectura (consultas)","Cifrar las comunicaciones","Evitar deadlocks","Reemplazar REST"],0,"Permite optimizar y escalar lecturas y escrituras por separado. Añade complejidad y consistencia eventual."],
+["En arquitectura hexagonal, ¿qué es un puerto?",["Una interfaz que define cómo el dominio se comunica con el exterior","Un puerto TCP","Una tabla de la BD","Un contenedor Docker"],0,"Los adaptadores (REST, JPA, mensajería) implementan los puertos. El dominio no depende de frameworks."],
+["¿Qué ventaja principal da una arquitectura orientada a eventos?",["Desacopla productores y consumidores","Garantiza consistencia inmediata","Elimina la necesidad de pruebas","Siempre usa menos infraestructura"],0,"A cambio: consistencia eventual, orden de mensajes y depuración más difícil."],
+["¿Por qué es problemático un Singleton clásico con estado mutable?",["Es estado global compartido, difícil de testear y poco seguro entre hilos","Consume demasiada memoria","No funciona en Java 17","No puede implementar interfaces"],0,"En Spring el contenedor ya gestiona instancias únicas sin necesidad de implementar el patrón a mano."],
+["¿Qué hace el patrón Prototype?",["Crea objetos nuevos clonando uno existente","Construye objetos paso a paso","Ofrece una interfaz simplificada a un subsistema","Notifica cambios a observadores"],0,"Útil cuando crear un objeto desde cero es costoso. Se confunde con Builder, que construye por pasos."]]},
+{t:"Spring Cloud y Security",i:"🔑",q:[
+["¿Qué función cumple Spring Cloud Gateway?",["Punto de entrada único: enrutamiento, filtros, rate limiting y seguridad","Persistir datos","Compilar el proyecto","Generar pruebas"],0,"Centraliza lo transversal para que cada microservicio no lo repita."],
+["¿Para qué sirve Spring Cloud Config?",["Centralizar la configuración externa de los microservicios","Balancear la base de datos","Cifrar tokens JWT","Generar Swagger"],0,"La configuración vive en un repositorio y cada entorno la consume sin recompilar."],
+["¿Qué resuelve el descubrimiento de servicios (Eureka, Consul)?",["Que los servicios se registren y se encuentren sin IPs fijas","Escanear puertos abiertos","Centralizar logs","Encolar mensajes"],0,"En contenedores las IPs cambian; se localiza por nombre del servicio. En Kubernetes lo hace su propio DNS."],
+["En OAuth2, ¿quién emite el access token?",["El servidor de autorización","El resource server","El cliente","El navegador"],0,"El resource server (tu API) solo valida el token y sus permisos."],
+["En Spring Security, ¿qué define un <code>SecurityFilterChain</code>?",["La cadena de filtros que autentica y autoriza cada petición HTTP","Las tablas de usuarios","El cifrado de la BD","El pool de conexiones"],0,"Ahí configuras rutas públicas, roles, CORS, CSRF y validación de JWT."],
+["¿Por qué guardar contraseñas con BCrypt y no con SHA-256 simple?",["BCrypt es lento a propósito y usa salt, lo que frena la fuerza bruta","Genera hashes más cortos","Es reversible","Java lo exige"],0,"Un hash rápido facilita probar miles de millones de combinaciones por segundo."]]},
+{t:"Diseño de APIs REST",i:"🌐",q:[
+["¿Qué código HTTP corresponde a un recurso creado con éxito?",["201 Created","200 OK","204 No Content","302 Found"],0,"Idealmente con la cabecera Location apuntando al nuevo recurso."],
+["¿Qué significa que un método HTTP sea idempotente?",["Repetirlo produce el mismo efecto que ejecutarlo una vez","No tiene body","Siempre devuelve 200","Siempre es cacheable"],0,"GET, PUT y DELETE lo son; POST normalmente no, por eso se usa una idempotency key en pagos."],
+["Llega un JSON con campos inválidos. ¿Qué código devuelves?",["400 Bad Request","500 Internal Server Error","404 Not Found","403 Forbidden"],0,"Es error del cliente. Un 500 indicaría un fallo del servidor."],
+["¿Cuál es la diferencia entre 401 y 403?",["401: no autenticado; 403: autenticado pero sin permisos","Son equivalentes","401: servidor caído; 403: token expirado","401: recurso inexistente; 403: error de BD"],0,"Una pregunta clásica de entrevista: autenticación vs autorización."],
+["¿Qué ventaja tiene GraphQL frente a REST?",["El cliente pide solo los campos que necesita en una única petición","Es siempre más rápido","No requiere esquema","Reemplaza a HTTP"],0,"Evita over-fetching y under-fetching. Complica el caché y el control del costo de las consultas."],
+["¿Qué es SOAP/WSDL y por qué aparece en banca?",["Un protocolo basado en XML con contrato formal, común en sistemas legados","Un formato binario","Una librería de JavaScript","Un tipo de base de datos"],0,"Muchos core bancarios exponen SOAP. Debes saber integrarlos y envolverlos con una API REST moderna."]]},
+{t:"Bases de datos y SQL",i:"🗄️",q:[
+["¿Para qué sirve un índice?",["Acelerar lecturas a costa de escrituras y espacio","Garantizar integridad referencial","Cifrar columnas","Reducir el número de tablas"],0,"Cada INSERT/UPDATE debe mantener el índice. Indexa columnas de filtros y joins frecuentes."],
+["¿Qué garantiza la 'I' de ACID?",["Aislamiento: transacciones concurrentes no se interfieren entre sí","Integridad de la red","Indexación","Inmutabilidad"],0,"El nivel de aislamiento define qué anomalías se permiten a cambio de rendimiento."],
+["Lees dos veces la misma fila en una transacción y el valor cambió porque otra confirmó. ¿Qué anomalía es?",["Non-repeatable read","Dirty read","Deadlock","Lost update"],0,"Dirty read es leer datos aún no confirmados. Repeatable Read o Serializable lo evitan."],
+["¿Qué diferencia hay entre INNER JOIN y LEFT JOIN?",["INNER solo devuelve filas con coincidencia; LEFT conserva todas las de la izquierda","Son iguales","LEFT siempre es más rápido","INNER conserva todas las filas"],0,"En LEFT JOIN, las filas sin coincidencia traen NULL en las columnas de la derecha."],
+["¿Para qué usas <code>EXPLAIN</code> (plan de ejecución)?",["Ver cómo el motor ejecutará la consulta y detectar full scans","Ejecutar y borrar datos","Crear índices automáticamente","Hacer un backup"],0,"Es la primera herramienta para optimizar consultas lentas."],
+["En una transferencia bancaria, ¿por qué usas una transacción?",["Para que el débito y el crédito ocurran ambos o ninguno","Para que sea más rápida","Para evitar usar índices","Para cifrar los datos"],0,"Es atomicidad. Entre microservicios no hay transacción única, por eso se usa SAGA."]]},
+{t:"Java avanzado",i:"🧠",q:[
+["¿Qué garantiza <code>volatile</code>?",["Visibilidad de los cambios entre hilos, sin atomicidad en operaciones compuestas","Atomicidad de <code>count++</code>","Exclusión mutua","Que la variable sea constante"],0,"Para operaciones compuestas necesitas AtomicInteger, synchronized o un Lock."],
+["Dos hilos hacen <code>count++</code> sobre un int compartido. ¿Qué puede pasar?",["Se pierden incrementos (race condition)","Siempre da el resultado correcto","Lanza excepción","Solo falla en Java 8"],0,"count++ son tres pasos (leer, sumar, escribir). Usa AtomicInteger o sincroniza."],
+["¿Qué ocurre si dos claves distintas tienen el mismo <code>hashCode</code> en un HashMap?",["Colisión: van al mismo bucket y se distinguen con equals","Se sobrescribe la primera","Lanza excepción","Se descarta la segunda"],0,"Por eso equals y hashCode deben ser consistentes: objetos iguales, mismo hash."],
+["¿Cuál es un memory leak típico en Java?",["Objetos aún referenciados (p. ej. en una colección estática) que el GC no puede liberar","Olvidar llamar a free()","Usar muchos hilos","Cualquier OutOfMemoryError"],0,"El GC libera lo inalcanzable; si sigue referenciado, se acumula."],
+["¿Qué aportan los virtual threads (Java 21)?",["Miles de hilos ligeros para código bloqueante sin agotar hilos de plataforma","Reemplazan a la JVM","Eliminan el GC","Solo sirven para interfaces gráficas"],0,"Alternativa más simple a lo reactivo en muchos casos de I/O bloqueante."],
+["En un String, ¿qué diferencia hay entre <code>==</code> y <code>equals</code>?",["== compara referencias; equals compara contenido","Son equivalentes","== compara contenido","equals compara referencias"],0,"Compara siempre contenido con equals."]]},
+{t:"Git, Maven y CI",i:"🛠️",q:[
+["¿Qué diferencia hay entre merge y rebase?",["Merge une historias con un commit de unión; rebase reaplica commits sobre otra base para un historial lineal","Son iguales","Rebase borra el repositorio","Merge reescribe el historial"],0,"No hagas rebase de ramas compartidas: reescribe commits."],
+["Subiste un commit con error a una rama compartida. ¿Qué es lo más seguro?",["<code>git revert</code>, que crea un commit que lo deshace","<code>git reset --hard</code> y force push","Borrar el repositorio","Ignorarlo"],0,"Revert no reescribe el historial, así que no rompe el trabajo de otros."],
+["¿Qué hace <code>mvn clean install</code>?",["Limpia, compila, ejecuta tests y empaqueta el artefacto en el repositorio local","Solo limpia la carpeta target","Despliega a producción","Genera una imagen Docker"],0,"Para publicar en Nexus usarías <code>deploy</code>."],
+["¿Qué indica el scope <code>test</code> de una dependencia Maven?",["Solo está disponible para pruebas y no va en el artefacto final","Está disponible en producción","Se descarga en runtime","Es opcional"],0,"JUnit y Mockito van con scope test."],
+["¿Qué es un Jenkinsfile?",["Pipeline as code: el pipeline versionado junto al código","Un plugin de Jenkins","Un archivo de logs","Un contenedor"],0,"Permite revisar y versionar el pipeline como cualquier código."],
+["¿Qué caracteriza al BDD?",["Escenarios en lenguaje natural (Given-When-Then) compartidos entre negocio, desarrollo y QA","Escribir las pruebas después del código","Usar solo mocks","Hacer pruebas de carga"],0,"Alinea al equipo en los criterios de aceptación, como pide el rol con el Quality Engineer."]]},
+{t:"Azure II y observabilidad",i:"📡",q:[
+["¿Cuándo eliges Azure Functions?",["Para código corto basado en eventos, escalable bajo demanda y con pago por ejecución","Para apps con estado permanente","Como base de datos relacional","Como balanceador de carga"],0,"Ideal para tareas puntuales: procesar un mensaje o un archivo subido."],
+["¿Para qué sirve Logic Apps?",["Orquestar flujos de integración con conectores y poco código","Compilar Java","Almacenar imágenes","Monitorear la CPU"],0,"Conecta sistemas (correo, APIs, colas) mediante workflows."],
+["¿Qué rol cumple Azure Container Registry (ACR)?",["Almacenar y versionar imágenes de contenedor que luego despliega AKS","Ejecutar los contenedores","Gestionar secretos","Resolver DNS"],0,"El pipeline construye la imagen, la sube a ACR y AKS la descarga."],
+["¿Cuáles son los tres pilares de la observabilidad?",["Logs, métricas y trazas","CPU, RAM y disco","Dev, QA y prod","Build, test y deploy"],0,"Los logs dicen qué pasó, las métricas cuánto y las trazas por dónde pasó la petición."],
+["¿Para qué sirve un correlation/trace ID?",["Seguir una petición a través de varios microservicios en los logs","Autenticar usuarios","Cifrar mensajes","Balancear la carga"],0,"Sin él, depurar un flujo distribuido es casi imposible."],
+["¿Qué incluye un buen plan de monitoreo para un pase a producción?",["Alertas de errores, latencia y saturación antes, durante y después, con plan de rollback","Solo verificar que compile","Quitar los tests","Mirar los logs al día siguiente"],0,"Lo pide el puesto: monitoreo previo al pase, durante la producción y postproducción."]]},
+{t:"Liderazgo y entrevista",i:"🎤",q:[
+["Un compañero entrega código que funciona pero rompe los estándares. ¿Cómo haces el code review?",["Feedback específico y respetuoso, explicando el porqué y proponiendo una alternativa","Lo reescribes tú","Lo apruebas para evitar conflicto","Lo reportas al jefe"],0,"Un Chapter Lead eleva el nivel del equipo, no solo corrige código."],
+["Dos desarrolladores no se ponen de acuerdo en una decisión técnica. ¿Qué haces?",["Comparar trade-offs con criterios objetivos y documentar la decisión","Decidir por antigüedad","Votar sin discutir","Postergarlo"],0,"Un ADR (registro de decisión de arquitectura) deja el porqué por escrito."],
+["El negocio pide una fecha imposible. ¿Qué haces?",["Explicar riesgos con datos y proponer un alcance reducido o por fases","Aceptar y hacer horas extra","Rechazar sin alternativas","Recortar las pruebas"],0,"Negociar alcance, tiempo y calidad con opciones muestra criterio."],
+["¿Cómo explicas un tema técnico complejo a una persona de negocio?",["Con analogías y foco en el impacto, sin jerga","Con todos los detalles internos","Con diagramas UML","No lo explicas"],0,"Los puestos piden comunicar conceptos complejos de forma clara y simple."],
+["En la entrevista te preguntan algo que no sabes. ¿Qué haces?",["Lo admites y razonas en voz alta cómo lo abordarías","Inventas una respuesta","Cambias de tema","Te quedas en silencio"],0,"Evalúan tu forma de pensar. Inventar suele detectarse y resta confianza."],
+["Usas IA para generar código. ¿Qué haces antes de integrarlo?",["Lo revisas, lo entiendes, lo pruebas y verificas seguridad como cualquier código","Lo pegas directo","Confías porque compila","Lo subes sin tests"],0,"Ante una entrevista, defender tu criterio sobre la IA importa tanto como usarla."],
+["¿Qué significa el formato STAR para contar tus experiencias?",["Situación, Tarea, Acción y Resultado","Sprint, Test, Análisis y Release","Scope, Time, Architecture y Risk","Setup, Tools, Automation y Review"],0,"Prepara 4-5 historias reales con este formato para las preguntas de comportamiento."]]},
+{t:"WebFlux a fondo",i:"🌊",q:[
+["¿Qué hace <code>switchIfEmpty</code> en un Mono?",["Cambia a otro publisher si el Mono completa sin valor","Cambia de hilo","Reintenta la operación","Lanza un error"],0,"Ojo: su argumento se evalúa de forma ansiosa. Si tiene efectos secundarios, envuélvelo en Mono.defer."],
+["¿Qué es el backpressure?",["El consumidor indica al productor cuántos elementos puede procesar","Una compresión de datos","Un tipo de caché","Un reintento automático"],0,"Evita que un productor rápido desborde a un consumidor lento."],
+["¿Cuál es la diferencia entre <code>Mono</code> y <code>Flux</code>?",["Mono emite de 0 a 1 elemento; Flux de 0 a N","Mono es síncrono y Flux asíncrono","Flux solo sirve con bases de datos","No hay diferencia"],0,"Ambos son publishers reactivos y perezosos."],
+["¿Qué diferencia hay entre <code>subscribeOn</code> y <code>publishOn</code>?",["subscribeOn fija el scheduler desde donde arranca la suscripción; publishOn cambia el hilo de los operadores siguientes","Son equivalentes","publishOn afecta a toda la cadena","subscribeOn solo existe en Flux"],0,"Una pregunta muy frecuente. Sirven para mover trabajo bloqueante fuera del event loop."],
+["¿Cómo te recuperas de un error devolviendo un valor alternativo?",["onErrorResume u onErrorReturn","Un try/catch alrededor de subscribe","block()","doOnNext"],0,"Los errores asíncronos no los captura un try/catch tradicional."],
+["¿Qué hace <code>Mono.zip</code>?",["Combina los resultados de varios Mono cuando todos terminan, ejecutándolos en paralelo","Comprime datos","Los encadena uno tras otro","Ignora los errores"],0,"Útil para consultar varios servicios a la vez, por ejemplo saldo y movimientos."],
+["Necesitas llamar a una API externa desde WebFlux. ¿Qué cliente usas?",["WebClient","RestTemplate","HttpURLConnection","JDBC"],0,"RestTemplate es bloqueante y frenaría el event loop."],
+["¿Cuándo NO conviene WebFlux?",["Con mucho código bloqueante (JDBC) y poca concurrencia, o si el equipo no domina el modelo","Con alta concurrencia de I/O","Con streaming de datos","Con llamadas a muchos servicios"],0,"No es más rápido por sí solo: rinde más con mucha concurrencia de I/O. Spring MVC sigue siendo válido."]]},
+{t:"SAGA y mensajería",i:"📨",q:[
+["¿Qué diferencia hay entre coreografía y orquestación en una SAGA?",["Coreografía: los servicios reaccionan a eventos sin coordinador; orquestación: un orquestador dirige los pasos","Son iguales","La orquestación no usa eventos","La coreografía exige una BD única"],0,"La orquestación da más control y visibilidad; la coreografía, más desacople pero más difícil de seguir."],
+["¿Qué es el patrón Outbox?",["Guardar el evento en la misma transacción local que el cambio y publicarlo después","Una cola de correo saliente","Una caché de salida","Una tabla de logs"],0,"Evita el problema de guardar en la BD y perder el mensaje si falla la publicación."],
+["¿Por qué los consumidores de mensajes deben ser idempotentes?",["Porque la entrega 'al menos una vez' puede duplicar mensajes","Porque Kafka no admite JSON","Para ahorrar memoria","Porque lo exige Spring"],0,"Procesar dos veces el mismo mensaje no debe producir dos efectos."],
+["¿Qué es una Dead Letter Queue?",["Una cola para mensajes que fallaron tras varios reintentos, para analizarlos","Una cola de alta prioridad","Una cola de logs","Una cola cifrada"],0,"Evita que un mensaje venenoso bloquee el procesamiento."],
+["¿Por qué se evita 2PC (commit en dos fases) entre microservicios?",["Bloquea recursos, acopla servicios y reduce la disponibilidad","Es demasiado barato","No existe en Java","Solo funciona con REST"],0,"Por eso se prefiere SAGA con consistencia eventual."],
+["¿Qué orden garantiza Kafka?",["Orden dentro de una partición, no entre particiones","Orden global","Ninguno","Solo con un consumidor"],0,"Usa la misma clave (p. ej. el id de cuenta) para que sus eventos caigan en la misma partición."],
+["La compensación de una SAGA también falla. ¿Qué haces?",["Reintentos idempotentes y, si persiste, alerta e intervención manual con estado auditable","Ignorarlo","Borrar los datos","Reiniciar la base de datos"],0,"En banca el estado intermedio debe quedar siempre visible y auditable."],
+["¿Qué significa consistencia eventual?",["Los datos pueden diferir un tiempo pero convergen si no hay más cambios","Los datos son consistentes al instante","Los datos nunca coinciden","No hay ninguna garantía"],0,"Es el costo de ganar disponibilidad y desacople."]]},
+{t:"Patrones de diseño a fondo",i:"🧱",q:[
+["¿Qué resuelve el patrón Factory?",["Delega la creación de objetos para no acoplar al cliente a clases concretas","Clona objetos","Notifica cambios","Envuelve objetos"],0,"Por ejemplo, crear el procesador de pago correcto según el tipo de tarjeta."],
+["¿Cuándo usas Builder?",["Objetos con muchos parámetros opcionales, para construirlos de forma legible e inmutable","Para tener una única instancia","Para clonar objetos","Para controlar accesos"],0,"En Java se genera con Lombok <code>@Builder</code>."],
+["¿Qué hace Adapter?",["Convierte la interfaz de una clase en otra que el cliente espera","Simplifica un subsistema complejo","Clona objetos","Crea familias de objetos"],0,"Caso típico en banca: envolver un servicio SOAP legado detrás de una interfaz moderna."],
+["¿Qué hace Facade?",["Ofrece una interfaz simple a un subsistema complejo","Convierte interfaces incompatibles","Observa cambios","Clona objetos"],0,"No lo confundas con Adapter: Facade simplifica, Adapter traduce."],
+["¿Qué hace Observer?",["Notifica a varios suscriptores cuando cambia el estado de un objeto","Crea objetos","Envuelve objetos","Cachea resultados"],0,"Es la base de los eventos, incluidos los de Spring."],
+["¿Para qué sirve Proxy y dónde lo ves en Spring?",["Controla el acceso a un objeto; Spring lo usa en <code>@Transactional</code> y AOP","Clona objetos","Crea hilos","Cachea siempre"],0,"Conecta con la pregunta del self-invocation."],
+["¿Qué define Template Method?",["El esqueleto de un algoritmo en una clase base, dejando pasos a las subclases","Una familia de algoritmos intercambiables","Una única instancia global","Un estado compartido"],0,"Strategy usa composición; Template Method usa herencia."],
+["¿Cuál es el riesgo de abusar de los patrones?",["Sobreingeniería y complejidad innecesaria","Ninguno","Que el código sea más rápido","Que no compile"],0,"Se aplica un patrón ante un problema real, no por defecto. Es una respuesta que valoran en entrevista."]]}
+];
+
+/* ===== ESTADO ===== */
+const KEY='rbj-v1',$=s=>document.querySelector(s);
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+S=S||{xp:0,st:{},streak:0,last:''};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const day=d=>new Date(d).toISOString().slice(0,10);
+
+function bump(){const t=day(Date.now());if(S.last!==t){S.streak=S.last===day(Date.now()-864e5)?S.streak+1:1;S.last=t}}
+
+/* ===== RUTA ===== */
+function render(){
+  $('#xp').textContent=S.xp;$('#sk').textContent=S.streak;
+  const ov=Object.values(S.oral||{});$('#ob').textContent='🎙️ Práctica oral'+(ov.length?' · '+Math.round(ov.reduce((a,b)=>a+b,0)/ov.length)+'%':'');
+  $('#bar').style.width=Object.keys(S.st).length/U.length*100+'%';
+  $('#path').innerHTML=U.map((u,i)=>{
+    const d=S.st[i]!==undefined,ok=i===0||S.st[i-1]!==undefined,x=[0,50,0,-50][i%4];
+    const sub=d?`<span class="stars">${'★'.repeat(S.st[i])+'☆'.repeat(3-S.st[i])}</span>`:ok?'Empezar':'Bloqueado';
+    return `<div class="row" style="transform:translateX(${x}px)"><button class="node ${d?'done':ok?'open':'lock'}" ${ok?'':'disabled'} aria-label="${u.t}" onclick="start(${i})">${ok?u.i:'🔒'}</button><div class="lbl">${u.t}<small>${sub}</small></div></div>`}).join('');
+}
+
+/* ===== LECCIÓN ===== */
+let L;
+function start(i){
+  L={i,n:0,h:3,ans:false,qs:U[i].q.map(q=>({q:q[0],e:q[3],o:q[1].map((t,k)=>[t,k===q[2]]).sort(()=>Math.random()-.5)}))};
+  $('#modal').className='on';ask();
+}
+function ask(){
+  const q=L.qs[L.n];
+  $('#modal').innerHTML=`<div class="card"><div class="top"><button class="x" aria-label="Salir" onclick="closeM()">✕</button><div class="pb"><i style="width:${L.n/L.qs.length*100}%"></i></div><span class="st">❤️ ${L.h}</span></div><h2>${q.q}</h2>${q.o.map((o,k)=>`<button class="opt" onclick="pick(${k},this)">${o[0]}</button>`).join('')}<div id="fb"></div></div>`;
+}
+function pick(k,b){
+  if(L.ans)return;L.ans=true;
+  const q=L.qs[L.n],ok=q.o[k][1];
+  document.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(q.o[j][1])x.classList.add('ok')});
+  if(ok){S.xp+=10}else{b.classList.add('bad');L.h--}
+  save();
+  const end=L.h<=0||L.n===L.qs.length-1;
+  const f=$('#fb');f.className=ok?'good':'no';
+  f.innerHTML=`<b>${ok?'¡Correcto! +10 XP':'Incorrecto'}</b><p>${q.e}</p><button class="go" onclick="${end?'finish()':'next()'}">${end?'Terminar':'Continuar'}</button>`;
+  f.querySelector('.go').focus();
+}
+function next(){L.n++;L.ans=false;ask()}
+function finish(){
+  const pass=L.h>0;
+  if(pass){S.st[L.i]=Math.max(S.st[L.i]||0,L.h);bump()}
+  save();
+  $('#modal').innerHTML=`<div class="card c"><h1>${pass?'🎉 ¡Nivel completado!':'💔 Te quedaste sin vidas'}</h1>${pass?`<div class="stars" style="font-size:36px">${'★'.repeat(L.h)+'☆'.repeat(3-L.h)}</div><p>Ganaste experiencia y desbloqueaste el siguiente nivel.</p>`:'<p>Repasa las explicaciones y vuelve a intentarlo.</p>'}<button class="go" onclick="closeM()">Volver a la ruta</button></div>`;
+}
+function closeM(){$('#modal').className='';render()}
+function reset(){if(confirm('¿Borrar todo tu progreso?')){S={xp:0,st:{},streak:0,last:''};save();render()}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').className)closeM()});
+/* ===== SIMULACRO: 15 preguntas mezcladas, 15 min, resultado por tema ===== */
+let M;
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+function sim(){
+  const all=U.flatMap(u=>u.q.map(q=>({t:u.t,q:q[0],o:q[1].map((x,k)=>[x,k===q[2]]).sort(()=>Math.random()-.5)})));
+  M={qs:all.sort(()=>Math.random()-.5).slice(0,15),n:0,r:[],t:900};
+  $('#modal').className='on';
+  M.iv=setInterval(()=>{
+    if(!$('#modal').className){clearInterval(M.iv);return}
+    M.t--;const e=$('#tm');if(e)e.textContent=fmt(M.t);if(M.t<=0)simEnd();
+  },1000);
+  simAsk();
+}
+function simAsk(){
+  const q=M.qs[M.n];
+  $('#modal').innerHTML=`<div class="card"><div class="top"><button class="x" aria-label="Salir" onclick="simQuit()">✕</button><div class="pb"><i style="width:${M.n/M.qs.length*100}%"></i></div><span class="st">⏱️ <span id="tm">${fmt(M.t)}</span></span></div><p class="mut">Pregunta ${M.n+1} de ${M.qs.length}</p><h2>${q.q}</h2>${q.o.map((o,k)=>`<button class="opt" onclick="simPick(${k})">${o[0]}</button>`).join('')}</div>`;
+}
+function simPick(k){M.r.push(M.qs[M.n].o[k][1]);if(++M.n>=M.qs.length)simEnd();else simAsk()}
+function simQuit(){if(confirm('¿Salir del simulacro? Se perderá este intento.')){clearInterval(M.iv);closeM()}}
+function simEnd(){
+  clearInterval(M.iv);
+  const T={};M.qs.forEach((q,i)=>{const v=T[q.t]=T[q.t]||{ok:0,n:0};v.n++;if(M.r[i])v.ok++});
+  const ok=M.r.filter(Boolean).length,n=M.qs.length,p=Math.round(ok/n*100);
+  S.xp+=ok*5;save();
+  $('#modal').innerHTML=`<div class="card"><h1 style="text-align:center">${p>=80?'🏆':p>=60?'👍':'📚'} ${ok}/${n} · ${p}%</h1><p class="mut" style="text-align:center;margin-bottom:20px">${p>=80?'Muy bien. Ahora practica explicarlo en voz alta.':p>=60?'Buen avance. Refuerza los temas en rojo.':'Repasa los temas en rojo y reintenta.'} Las preguntas sin responder cuentan como fallo.</p>${Object.entries(T).map(([t,v])=>`<div class="rr"><span>${t}</span><b class="${v.ok===v.n?'g':'r'}">${v.ok}/${v.n}</b></div>`).join('')}<button class="go" style="margin-top:20px" onclick="closeM()">Volver a la ruta</button></div>`;
+}
+
+/* ===== PRÁCTICA ORAL: responde y compara con los puntos clave ===== */
+const O=[
+["Explica la diferencia entre <code>map</code> y <code>flatMap</code> en Reactor y por qué bloquear es un problema.",["map transforma el valor de forma síncrona","flatMap aplana un Mono/Flux interno (operación asíncrona)","block() bloquea los pocos hilos del event loop y degrada todo el servicio","Si hay código bloqueante inevitable, aislarlo en un scheduler propio (boundedElastic)"]],
+["Una transferencia entre dos microservicios falla a la mitad. ¿Cómo lo manejas?",["Patrón SAGA con transacciones compensatorias","Coreografía (eventos) vs orquestación (coordinador) y cuándo elegir cada una","Idempotencia y reintentos seguros","Consistencia eventual y estado visible de la operación","Auditoría y trazabilidad de cada paso"]],
+["Diseña la API REST para consultar saldos y hacer transferencias en una banca móvil.",["Recursos claros (cuentas, saldo, transferencias) y versionado","POST de transferencia con Idempotency-Key","Códigos HTTP correctos: 201, 400, 401, 403, 409","OAuth2/JWT, validación de entrada y límites de uso","Timeouts, Circuit Breaker y manejo de fallos del core","Trace ID, métricas y documentación OpenAPI"]],
+["Cuéntame de un patrón de diseño que aplicaste y por qué lo elegiste.",["Problema concreto que había","Patrón elegido y alternativas descartadas","Beneficio logrado","Trade-offs o costos del patrón","Resultado medible"]],
+["¿Cómo aseguras la calidad del código de tu equipo?",["Code review con feedback constructivo","Pruebas unitarias e integración, TDD cuando aplica","Quality gate de SonarQube en el pipeline","Estándares y análisis estático automáticos","Cobertura útil, no solo un porcentaje"]],
+["¿Cómo proteges una API frente al OWASP Top 10?",["Validación de entrada y consultas parametrizadas","Autenticación y autorización correctas (OAuth2/JWT, roles)","Secretos en un gestor (Key Vault), nunca en el código","HTTPS y sin exponer datos sensibles ni stack traces","Dependencias actualizadas y logging de seguridad"]],
+["Una consulta en producción se volvió lenta. ¿Qué haces?",["Medir primero con métricas y trazas","Revisar el plan de ejecución (EXPLAIN)","Índices adecuados y detectar N+1","Paginación y caché si aplica","Validar la mejora y dejar monitoreo"]],
+["Cuéntame de un conflicto técnico que resolviste (formato STAR).",["Situación con contexto breve","Tarea: cuál era tu responsabilidad","Acción: qué hiciste tú, no el equipo","Resultado con un dato medible","Aprendizaje"]]
+];
+function oral(i){
+  S.oral=S.oral||{};
+  if(i>=O.length){closeM();return}
+  $('#modal').className='on';
+  $('#modal').innerHTML=`<div class="card"><div class="top"><button class="x" aria-label="Salir" onclick="closeM()">✕</button><div class="pb"><i style="width:${i/O.length*100}%"></i></div></div><p class="mut">Responde en voz alta o escribe tu respuesta antes de ver la guía.</p><h2>${O[i][0]}</h2><textarea id="ta" rows="5" placeholder="Tu respuesta…"></textarea><div id="pt"></div><button class="go" id="bt" onclick="oralShow(${i})">Ver puntos clave</button></div>`;
+}
+function oralShow(i){
+  $('#pt').innerHTML='<p><b>Marca lo que cubriste:</b></p>'+O[i][1].map(p=>`<label class="ck"><input type="checkbox"> ${p}</label>`).join('');
+  const b=$('#bt');b.textContent=i+1<O.length?'Guardar y seguir':'Terminar';
+  b.onclick=()=>{const c=[...document.querySelectorAll('.ck input')];S.oral[i]=Math.round(c.filter(x=>x.checked).length/c.length*100);save();oral(i+1)};
+}
+/* ===== EXPORTAR / IMPORTAR PROGRESO ===== */
+function exp(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));
+  a.download='progreso-ruta-java.json';a.click();
+}
+function imp(f){
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const d=JSON.parse(r.result);
+    if(typeof d.xp!=='number'||typeof d.st!=='object'||!d.st)throw 0;
+    S=d;save();render();alert('Progreso importado.');
+  }catch(e){alert('El archivo no es válido.')}};
+  r.readAsText(f);
+}
+render();
+</script>
+</body>
+</html>
