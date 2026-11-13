@@ -56,12 +56,18 @@ function percentage(value) {
     return value === null || value === undefined ? "Datos insuficientes" : `${value}%`;
 }
 
+function formatAverage(value) {
+    return typeof value === "number" && Number.isFinite(value)
+        ? new Intl.NumberFormat("es-PE", { maximumFractionDigits: 2 }).format(value)
+        : "Datos insuficientes";
+}
+
 function marketSummary(market, names, line) {
     if (!market?.total) return ["Datos insuficientes"];
     const total = market.total.find((value) => value.line === line);
     const average = market.averages?.total;
     return total
-        ? [`Promedio total: ${average}`, `Más de ${line}: ${total.over}%`, `Menos de ${line}: ${total.under}%`]
+        ? [`Promedio total: ${formatAverage(average)}`, `Más de ${line}: ${total.over}%`, `Menos de ${line}: ${total.under}%`]
         : ["Datos insuficientes"];
 }
 
