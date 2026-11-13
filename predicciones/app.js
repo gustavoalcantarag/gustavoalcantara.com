@@ -74,8 +74,8 @@ function marketSummary(market, names, line) {
 function addRecentResults(prediction) {
     recentResultsGrid.replaceChildren();
     const groups = [
-        ["Local", prediction.recentResults?.home],
-        ["Visitante", prediction.recentResults?.away]
+        [prediction.probabilities?.home?.name || "Local", prediction.recentResults?.home],
+        [prediction.probabilities?.away?.name || "Visitante", prediction.recentResults?.away]
     ];
     let hasResults = false;
 
@@ -91,12 +91,22 @@ function addRecentResults(prediction) {
         matches.forEach((match) => {
             const item = document.createElement("li");
             const detail = document.createElement("span");
-            detail.textContent = `${match.date} · vs ${match.opponent} · ${match.goalsFor}-${match.goalsAgainst}`;
+            const opponent = String(match.opponent || "")
+                .replace(/\b\w/g, (letter) => letter.toUpperCase());
+            const competition = match.competition ? ` · competición ${match.competition}` : "";
+            detail.textContent = `${match.date} · vs ${opponent} · ${match.goalsFor}-${match.goalsAgainst}${competition}`;
             item.append(detail);
 
+            if (!match.sourceUrl) {
+                list.append(item);
+                return;
+            }
             try {
                 const url = new URL(match.sourceUrl);
-                if (!["http:", "https:"].includes(url.protocol)) return;
+                if (!["http:", "https:"].includes(url.protocol)) {
+                    list.append(item);
+                    return;
+                }
                 const link = document.createElement("a");
                 link.href = url.href;
                 link.textContent = "Fuente";
@@ -104,6 +114,7 @@ function addRecentResults(prediction) {
                 link.rel = "noopener noreferrer";
                 item.append(link);
             } catch {
+                list.append(item);
                 return;
             }
             list.append(item);
@@ -171,8 +182,12 @@ async function analyzeFixture() {
     try {
         const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
         predictionMatch.textContent = prediction.match;
-        predictionNote.textContent = prediction.recentResults
-            ? `Fuente: ${prediction.source}. Estimación basada en cinco resultados recientes por equipo; revisa las fuentes asociadas. Los datos de búsqueda pueden contener errores.`
+        predictionNote.textContent = prediction.confidence === "very_low"
+            ? `Pronóstico de muy baja confianza: se basa en ${prediction.sample?.home || 0} partidos recientes del local y ${prediction.sample?.away || 0} del visitante, de las competiciones disponibles. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
+            : prediction.confidence === "low"
+                ? `Pronóstico de baja confianza: usa cinco partidos recientes por equipo de otras competiciones. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
+            : prediction.recentResults
+                ? `Fuente: ${prediction.source}. Estimación basada en cinco resultados recientes por equipo; revisa las fuentes asociadas. Los datos de búsqueda pueden contener errores.`
             : prediction.source
                 ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
             : "No hay suficiente histórico verificable para generar este pronóstico.";
