@@ -152,6 +152,52 @@ a:focus-visible {
     text-underline-offset: .15em;
 }
 
+.recent-results {
+    margin-top: 1.5rem;
+}
+
+.recent-results h3 {
+    margin-bottom: .75rem;
+    font-size: 1rem;
+}
+
+.recent-results-grid {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.recent-team {
+    padding: .9rem;
+    border: 1px solid #dfe4ec;
+    border-radius: .7rem;
+    background: #fbfcfe;
+}
+
+.recent-team h4 {
+    margin: 0 0 .5rem;
+}
+
+.recent-team ul {
+    display: grid;
+    gap: .45rem;
+    margin: 0;
+    padding-left: 1.15rem;
+}
+
+.recent-team li {
+    color: #536176;
+    font-size: .82rem;
+    line-height: 1.45;
+}
+
+.recent-team a {
+    margin-left: .4rem;
+    color: #a8475f;
+    text-decoration: underline;
+    text-underline-offset: .15em;
+}
+
 .results-grid {
     display: grid;
     gap: .75rem;

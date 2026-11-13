@@ -9,6 +9,8 @@ const predictionMatch = document.querySelector("#prediction-match");
 const predictionNote = document.querySelector("#prediction-note");
 const predictionSources = document.querySelector("#prediction-sources");
 const predictionResults = document.querySelector("#prediction-results");
+const recentResults = document.querySelector("#recent-results");
+const recentResultsGrid = document.querySelector("#recent-results-grid");
 
 function setFeedback(message) {
     feedback.textContent = message;
@@ -61,6 +63,51 @@ function marketSummary(market, names, line) {
     return total
         ? [`Promedio total: ${average}`, `Más de ${line}: ${total.over}%`, `Menos de ${line}: ${total.under}%`]
         : ["Datos insuficientes"];
+}
+
+function addRecentResults(prediction) {
+    recentResultsGrid.replaceChildren();
+    const groups = [
+        ["Local", prediction.recentResults?.home],
+        ["Visitante", prediction.recentResults?.away]
+    ];
+    let hasResults = false;
+
+    groups.forEach(([label, matches]) => {
+        if (!Array.isArray(matches) || matches.length === 0) return;
+        hasResults = true;
+        const group = document.createElement("section");
+        group.className = "recent-team";
+        const heading = document.createElement("h4");
+        heading.textContent = label;
+        const list = document.createElement("ul");
+
+        matches.forEach((match) => {
+            const item = document.createElement("li");
+            const detail = document.createElement("span");
+            detail.textContent = `${match.date} · vs ${match.opponent} · ${match.goalsFor}-${match.goalsAgainst}`;
+            item.append(detail);
+
+            try {
+                const url = new URL(match.sourceUrl);
+                if (!["http:", "https:"].includes(url.protocol)) return;
+                const link = document.createElement("a");
+                link.href = url.href;
+                link.textContent = "Fuente";
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                item.append(link);
+            } catch {
+                return;
+            }
+            list.append(item);
+        });
+
+        group.append(heading, list);
+        recentResultsGrid.append(group);
+    });
+
+    recentResults.hidden = !hasResults;
 }
 
 async function loadLeagues() {
@@ -118,8 +165,10 @@ async function analyzeFixture() {
     try {
         const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
         predictionMatch.textContent = prediction.match;
-        predictionNote.textContent = prediction.source
-            ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
+        predictionNote.textContent = prediction.recentResults
+            ? `Fuente: ${prediction.source}. Estimación basada en cinco resultados recientes por equipo; revisa las fuentes asociadas. Los datos de búsqueda pueden contener errores.`
+            : prediction.source
+                ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
             : "No hay suficiente histórico verificable para generar este pronóstico.";
         predictionSources.replaceChildren();
         (prediction.sources || []).forEach((source) => {
@@ -139,6 +188,7 @@ async function analyzeFixture() {
             }
         });
         predictionSources.hidden = predictionSources.childElementCount === 0;
+        addRecentResults(prediction);
         predictionResults.replaceChildren();
         const names = {
             home: prediction.probabilities?.home?.name || "Local",
