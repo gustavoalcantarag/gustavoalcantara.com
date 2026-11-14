@@ -19,7 +19,7 @@
         <section class="intro" aria-labelledby="page-title">
             <p class="eyebrow">Análisis estadístico</p>
             <h1 id="page-title">Elige un partido</h1>
-            <p>Selecciona una liga, revisa sus próximos encuentros y elige un versus para consultar sus datos disponibles.</p>
+            <p>Selecciona un partido disponible o ingresa los equipos manualmente si no aparece en la lista.</p>
         </section>
 
         <section class="selector-card" aria-labelledby="selector-title">
@@ -35,6 +35,23 @@
             </select>
 
             <button id="analyze-button" type="button" disabled>Analizar partido</button>
+            <div class="manual-entry">
+                <h3>¿No aparece el partido?</h3>
+                <p>Ingresa la competición y los equipos para buscar un pronóstico sin depender de la lista de encuentros.</p>
+                <form id="manual-form">
+                    <label for="manual-league">Liga o competición</label>
+                    <input id="manual-league" name="league" list="league-options" maxlength="100" autocomplete="off" required>
+                    <datalist id="league-options"></datalist>
+
+                    <label for="manual-home">Equipo local (A)</label>
+                    <input id="manual-home" name="home" maxlength="100" autocomplete="off" required>
+
+                    <label for="manual-away">Equipo visitante (B)</label>
+                    <input id="manual-away" name="away" maxlength="100" autocomplete="off" required>
+
+                    <button id="manual-analyze-button" type="submit">Buscar pronóstico</button>
+                </form>
+            </div>
             <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
         </section>
 

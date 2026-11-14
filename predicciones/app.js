@@ -11,6 +11,9 @@ const predictionSources = document.querySelector("#prediction-sources");
 const predictionResults = document.querySelector("#prediction-results");
 const recentResults = document.querySelector("#recent-results");
 const recentResultsGrid = document.querySelector("#recent-results-grid");
+const manualForm = document.querySelector("#manual-form");
+const manualLeague = document.querySelector("#manual-league");
+const manualAnalyzeButton = document.querySelector("#manual-analyze-button");
 
 function setFeedback(message) {
     feedback.textContent = message;
@@ -133,6 +136,14 @@ async function loadLeagues() {
         leagueSelect.replaceChildren();
         addOption(leagueSelect, "", "Selecciona una liga");
         leagues.forEach((league) => addOption(leagueSelect, league.id, league.name));
+        const leagueOptions = document.querySelector("#league-options");
+        leagueOptions.replaceChildren();
+        leagues.forEach((league) => {
+            const option = document.createElement("option");
+            option.value = league.name;
+            option.dataset.id = league.id;
+            leagueOptions.append(option);
+        });
     } catch (error) {
         leagueSelect.replaceChildren();
         addOption(leagueSelect, "", "Ligas no disponibles");
@@ -171,6 +182,66 @@ async function loadFixtures() {
     }
 }
 
+function showPrediction(prediction) {
+    predictionMatch.textContent = prediction.match;
+    predictionNote.textContent = prediction.basis === "competition_baseline"
+        ? `Pronóstico de muy baja confianza: se basa solo en el promedio de goles de ${prediction.sample?.league || 0} partidos recientes de esta competición, no en el rendimiento de estos equipos. ${prediction.fallbackNotice || ""} Solo estima goles y resultado; no hay datos para corners, tarjetas o tiros al arco.`
+        : prediction.confidence === "very_low"
+            ? `Pronóstico de muy baja confianza: se basa en ${prediction.sample?.home || 0} partidos recientes del local y ${prediction.sample?.away || 0} del visitante. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
+            : prediction.confidence === "low"
+                ? `Pronóstico de baja confianza: usa cinco partidos recientes por equipo de otras competiciones. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
+                : prediction.recentResults
+                    ? `Fuente: ${prediction.source}. Estimación basada en cinco resultados recientes por equipo; revisa las fuentes asociadas. Los datos de búsqueda pueden contener errores.`
+                    : prediction.source
+                        ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
+                        : "No hay suficiente histórico verificable para generar este pronóstico.";
+    predictionSources.replaceChildren();
+    (prediction.sources || []).forEach((source) => {
+        try {
+            const url = new URL(source);
+            if (!["http:", "https:"].includes(url.protocol)) return;
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = url.href;
+            link.textContent = url.hostname;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            item.append(link);
+            predictionSources.append(item);
+        } catch {
+            return;
+        }
+    });
+    predictionSources.hidden = predictionSources.childElementCount === 0;
+    addRecentResults(prediction);
+    predictionResults.replaceChildren();
+    const names = {
+        home: prediction.probabilities?.home?.name || "Local",
+        away: prediction.probabilities?.away?.name || "Visitante"
+    };
+    addResult("Resultado", prediction.probabilities
+        ? [
+            `${names.home}: ${percentage(prediction.probabilities.home.value)}`,
+            `Empate: ${percentage(prediction.probabilities.draw)}`,
+            `${names.away}: ${percentage(prediction.probabilities.away.value)}`
+        ]
+        : ["Datos insuficientes"], "outcome-result");
+    const goals = prediction.goals;
+    addResult("Goles", goals?.markets?.total
+        ? [
+            `Total: promedio ${formatAverage(goals.total)}`,
+            ...goals.markets.total.filter((line) => line.line === 2.5).flatMap((line) => [
+                `Más de ${line.line}: ${line.over}%`,
+                `Menos de ${line.line}: ${line.under}%`
+            ])
+        ]
+        : ["Datos insuficientes"], "goals-result");
+    addResult("Corners", marketSummary(prediction?.corners, names, 9.5), "average-result");
+    addResult("Tarjetas", marketSummary(prediction?.cards, names, 4.5), "average-result");
+    addResult("Tiros al arco", marketSummary(prediction?.shots, names, 20.5), "average-result");
+    predictionPanel.hidden = false;
+}
+
 async function analyzeFixture() {
     const fixtureId = fixtureSelect.value;
     if (!fixtureId) return;
@@ -181,63 +252,7 @@ async function analyzeFixture() {
 
     try {
         const { prediction } = await requestJson(`/predictions?fixture=${encodeURIComponent(fixtureId)}&league=${encodeURIComponent(leagueSelect.value)}&v=11`);
-        predictionMatch.textContent = prediction.match;
-        predictionNote.textContent = prediction.basis === "competition_baseline"
-            ? `Pronóstico de muy baja confianza: se basa solo en el promedio de goles de ${prediction.sample?.league || 0} partidos recientes de esta competición, no en el rendimiento de estos equipos. ${prediction.fallbackNotice || ""} Solo estima goles y resultado; no hay datos para corners, tarjetas o tiros al arco.`
-            : prediction.confidence === "very_low"
-            ? `Pronóstico de muy baja confianza: se basa en ${prediction.sample?.home || 0} partidos recientes del local y ${prediction.sample?.away || 0} del visitante, de las competiciones disponibles. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
-            : prediction.confidence === "low"
-                ? `Pronóstico de baja confianza: usa cinco partidos recientes por equipo de otras competiciones. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
-            : prediction.recentResults
-                ? `Fuente: ${prediction.source}. Estimación basada en cinco resultados recientes por equipo; revisa las fuentes asociadas. Los datos de búsqueda pueden contener errores.`
-            : prediction.source
-                ? `Fuente: ${prediction.source}. Las líneas Más/Menos son probabilidades del modelo.`
-            : "No hay suficiente histórico verificable para generar este pronóstico.";
-        predictionSources.replaceChildren();
-        (prediction.sources || []).forEach((source) => {
-            try {
-                const url = new URL(source);
-                if (!["http:", "https:"].includes(url.protocol)) return;
-                const item = document.createElement("li");
-                const link = document.createElement("a");
-                link.href = url.href;
-                link.textContent = url.hostname;
-                link.target = "_blank";
-                link.rel = "noopener noreferrer";
-                item.append(link);
-                predictionSources.append(item);
-            } catch {
-                return;
-            }
-        });
-        predictionSources.hidden = predictionSources.childElementCount === 0;
-        addRecentResults(prediction);
-        predictionResults.replaceChildren();
-        const names = {
-            home: prediction.probabilities?.home?.name || "Local",
-            away: prediction.probabilities?.away?.name || "Visitante"
-        };
-        addResult("Resultado", prediction.probabilities
-            ? [
-                `${names.home}: ${percentage(prediction.probabilities.home.value)}`,
-                `Empate: ${percentage(prediction.probabilities.draw)}`,
-                `${names.away}: ${percentage(prediction.probabilities.away.value)}`
-            ]
-            : ["Datos insuficientes"], "outcome-result");
-        const goals = prediction.goals;
-        addResult("Goles", goals?.markets?.total
-            ? [
-                `Total: promedio ${goals.total.toFixed(2)}`,
-                ...goals.markets.total.filter((line) => line.line === 2.5).flatMap((line) => [
-                    `Más de ${line.line}: ${line.over}%`,
-                    `Menos de ${line.line}: ${line.under}%`
-                ])
-            ]
-            : ["Datos insuficientes"], "goals-result");
-        addResult("Corners", marketSummary(prediction?.corners, names, 9.5), "average-result");
-        addResult("Tarjetas", marketSummary(prediction?.cards, names, 4.5), "average-result");
-        addResult("Tiros al arco", marketSummary(prediction?.shots, names, 20.5), "average-result");
-        predictionPanel.hidden = false;
+        showPrediction(prediction);
         setFeedback("");
     } catch (error) {
         setFeedback(error.message);
@@ -246,9 +261,37 @@ async function analyzeFixture() {
     }
 }
 
+async function analyzeManual(event) {
+    event.preventDefault();
+    const league = manualLeague.value.trim();
+    const home = document.querySelector("#manual-home").value.trim();
+    const away = document.querySelector("#manual-away").value.trim();
+    if (!manualForm.reportValidity()) return;
+
+    const matchingLeague = [...document.querySelector("#league-options").options]
+        .find((option) => option.value.toLocaleLowerCase() === league.toLocaleLowerCase());
+    const params = new URLSearchParams({ league, home, away });
+    if (matchingLeague?.dataset.id) params.set("leagueId", matchingLeague.dataset.id);
+
+    manualAnalyzeButton.disabled = true;
+    predictionPanel.hidden = true;
+    setFeedback("Buscando datos y calculando el pronóstico...");
+
+    try {
+        const { prediction } = await requestJson(`/predictions/manual?${params.toString()}`);
+        showPrediction(prediction);
+        setFeedback("");
+    } catch (error) {
+        setFeedback(error.message);
+    } finally {
+        manualAnalyzeButton.disabled = false;
+    }
+}
+
 leagueSelect.addEventListener("change", loadFixtures);
 fixtureSelect.addEventListener("change", () => {
     analyzeButton.disabled = !fixtureSelect.value;
 });
 analyzeButton.addEventListener("click", analyzeFixture);
+manualForm.addEventListener("submit", analyzeManual);
 loadLeagues();
