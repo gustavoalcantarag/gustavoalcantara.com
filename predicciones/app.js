@@ -184,7 +184,9 @@ async function loadFixtures() {
 
 function showPrediction(prediction) {
     predictionMatch.textContent = prediction.match;
-    predictionNote.textContent = prediction.basis === "competition_baseline"
+    predictionNote.textContent = prediction.basis === "global_baseline"
+        ? `Pronóstico de muy baja confianza y no específico de estos equipos: usa promedios generales de ${prediction.sample?.league || 0} partidos recientes de las ligas guardadas. ${prediction.fallbackNotice || ""}`
+        : prediction.basis === "competition_baseline"
         ? `Pronóstico de muy baja confianza: se basa solo en el promedio de goles de ${prediction.sample?.league || 0} partidos recientes de esta competición, no en el rendimiento de estos equipos. ${prediction.fallbackNotice || ""} Solo estima goles y resultado; no hay datos para corners, tarjetas o tiros al arco.`
         : prediction.confidence === "very_low"
             ? `Pronóstico de muy baja confianza: se basa en ${prediction.sample?.home || 0} partidos recientes del local y ${prediction.sample?.away || 0} del visitante. Solo estima goles y resultado; no hay datos suficientes para corners, tarjetas o tiros al arco.`
