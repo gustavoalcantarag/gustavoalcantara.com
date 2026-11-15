@@ -69,6 +69,15 @@ textarea{width:100%;padding:12px;border:2px solid var(--line);border-radius:14px
 .rr{display:flex;justify-content:space-between;padding:10px 14px;margin-bottom:8px;background:var(--card);border:2px solid var(--line);border-radius:12px}
 .g{color:var(--ok)}.r{color:var(--bad)}
 #pt{margin-bottom:14px}
+.box{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-weight:600}
+.box b{color:var(--blue);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.box p{margin:4px 0 0}
+.box.q{border-color:var(--amb)}.box.q b{color:var(--amb)}
+pre{margin:6px 0 0;padding:10px;background:var(--bg);border-radius:10px;overflow-x:auto;font-size:13px;line-height:1.5}
+pre code{background:none;padding:0;font-weight:600}
+.nav{display:flex;gap:10px;margin-top:auto;padding-top:16px}
+.nav .go{flex:1;width:auto}
+.sec{padding:14px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:900 15px Nunito,sans-serif;cursor:pointer}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -78,7 +87,7 @@ textarea{width:100%;padding:12px;border:2px solid var(--line);border-radius:14px
   <div class="prog" role="progressbar" aria-label="Progreso total"><div id="bar"></div></div>
 </header>
 <main>
-  <div class="intro"><b>Completa cada nivel para desbloquear el siguiente.</b> Tienes 3 vidas por nivel: si las pierdes, repasas y vuelves a intentarlo. Tu progreso se guarda en este navegador.</div>
+  <div class="intro"><b>Cada nivel tiene dos pasos:</b> 📖 una lección corta (concepto, qué te preguntan y un ejemplo práctico) y ✍️ un quiz para practicar. Completa el quiz para desbloquear el siguiente. Tienes 3 vidas por quiz. Tu progreso se guarda en este navegador.</div>
   <div class="acts"><button class="act" onclick="sim()">⏱️ Simulacro</button><button class="act" id="ob" onclick="oral(0)">🎙️ Práctica oral</button></div>
   <div id="path"></div>
   <div class="tools"><button class="rs" onclick="exp()">Exportar progreso</button><button class="rs" onclick="document.getElementById('fi').click()">Importar progreso</button><button class="rs" onclick="reset()">Reiniciar progreso</button><input id="fi" type="file" accept="application/json" hidden onchange="imp(this.files[0])"></div>
@@ -230,7 +239,7 @@ function render(){
 
 /* ===== LECCIÓN ===== */
 let L;
-function start(i){
+function quiz(i){
   L={i,n:0,h:3,ans:false,qs:U[i].q.map(q=>({q:q[0],e:q[3],o:q[1].map((t,k)=>[t,k===q[2]]).sort(()=>Math.random()-.5)}))};
   $('#modal').className='on';ask();
 }
@@ -254,7 +263,7 @@ function finish(){
   const pass=L.h>0;
   if(pass){S.st[L.i]=Math.max(S.st[L.i]||0,L.h);bump()}
   save();
-  $('#modal').innerHTML=`<div class="card c"><h1>${pass?'🎉 ¡Nivel completado!':'💔 Te quedaste sin vidas'}</h1>${pass?`<div class="stars" style="font-size:36px">${'★'.repeat(L.h)+'☆'.repeat(3-L.h)}</div><p>Ganaste experiencia y desbloqueaste el siguiente nivel.</p>`:'<p>Repasa las explicaciones y vuelve a intentarlo.</p>'}<button class="go" onclick="closeM()">Volver a la ruta</button></div>`;
+  $('#modal').innerHTML=`<div class="card c"><h1>${pass?'🎉 ¡Nivel completado!':'💔 Te quedaste sin vidas'}</h1>${pass?`<div class="stars" style="font-size:36px">${'★'.repeat(L.h)+'☆'.repeat(3-L.h)}</div><p>Ganaste experiencia y desbloqueaste el siguiente nivel.</p>`:'<p>Repasa las explicaciones y vuelve a intentarlo.</p>'}<button class="go" onclick="closeM()">Volver a la ruta</button>${!pass&&STUDY[U[L.i].t]?`<button class="sec" style="margin-top:12px" onclick="study(${L.i},0)">📖 Repasar la lección</button>`:''}</div>`;
 }
 function closeM(){$('#modal').className='';render()}
 function reset(){if(confirm('¿Borrar todo tu progreso?')){S={xp:0,st:{},streak:0,last:''};save();render()}}
@@ -308,6 +317,312 @@ function oralShow(i){
   const b=$('#bt');b.textContent=i+1<O.length?'Guardar y seguir':'Terminar';
   b.onclick=()=>{const c=[...document.querySelectorAll('.ck input')];S.oral[i]=Math.round(c.filter(x=>x.checked).length/c.length*100);save();oral(i+1)};
 }
+/* ===== LECCIONES DE ESTUDIO =====
+   STUDY["Título del nivel"]=[[título, concepto, "te pueden preguntar", código], ...]
+   Los niveles sin entrada en STUDY van directo al quiz. */
+const P=s=>'<pre><code>'+s+'</code></pre>';
+const STUDY={
+"SOLID y patrones":[
+["Single Responsibility (SRP)","Una clase debe tener una sola razón para cambiar. Si valida, guarda y notifica, cualquier cambio en una de esas tareas te obliga a tocarla y puedes romper las otras.","¿Qué principio viola esta clase y cómo la refactorizas? Respuesta: SRP; la separas en clases con una sola responsabilidad cada una.",`// Antes: hace todo
+class PagoService { validar(); guardar(); enviarCorreo(); }
+
+// Después: una tarea por clase
+class PagoValidator {}
+class PagoRepository {}
+class Notificador {}`],
+["Strategy","Encapsula algoritmos intercambiables detrás de una interfaz. Reemplaza cadenas de if/else por clases y cumple Open/Closed: agregas una estrategia nueva sin tocar el código existente.","¿Cómo manejas comisiones distintas por tipo de cuenta sin un if gigante?",`interface Comision { double calcular(double monto); }
+
+class Basica implements Comision {
+  public double calcular(double m){ return m * 0.02; }
+}
+class Premium implements Comision {
+  public double calcular(double m){ return 0; }
+}
+// Spring inyecta la estrategia que corresponda`],
+["Decorator","Envuelve un objeto para añadirle comportamiento sin modificar su clase, usando la misma interfaz. Se pueden apilar varios (log, caché, auditoría).","¿Cómo agregas auditoría a un servicio sin tocar su código?",`class AuditoriaPago implements PagoService {
+  private final PagoService real;
+  public void pagar(Pago p){
+    log.info("inicio");
+    real.pagar(p);          // delega al original
+    log.info("fin");
+  }
+}`]],
+"Spring Boot y JPA":[
+["Problema N+1","Cargas N entidades con 1 consulta y, al acceder a una relación lazy de cada una, Hibernate lanza N consultas más. Con 1000 clientes son 1001 consultas.","¿Cómo lo detectas y lo resuelves? Activas el log de SQL y usas join fetch, @EntityGraph o proyecciones.",`@Query("select c from Cliente c join fetch c.cuentas")
+List&lt;Cliente&gt; findAllConCuentas();
+// 1 sola consulta en vez de 1001`],
+["@Transactional y el proxy","Spring envuelve el bean en un proxy que abre y cierra la transacción. Si llamas al método desde la misma clase, la llamada no pasa por el proxy y la anotación no actúa. Por defecto solo hace rollback con RuntimeException.","¿Por qué mi @Transactional no hizo rollback? Revisa self-invocation y el tipo de excepción.",`public void procesar(){
+  guardar();   // llamada interna: sin proxy, NO hay transacción
+}
+@Transactional
+void guardar(){ ... }
+// Solución: mover guardar() a otro bean`],
+["Beans singleton","Por defecto hay una sola instancia de cada bean para toda la aplicación y la comparten todos los hilos. Por eso un bean no debe guardar estado mutable del usuario o de la petición.","¿Qué pasa si guardas datos de la petición en un campo de un @Service? Se mezclan entre usuarios (race condition).",`@Service class Mal {
+  private Usuario actual;     // compartido: peligroso
+}
+@Service class Bien {
+  Resp procesar(Usuario u){ ... }  // estado local
+}`]],
+"Programación reactiva":[
+["Todo es lazy","Un Mono/Flux describe qué hacer, pero no ejecuta nada hasta que alguien se suscribe. En WebFlux el framework se suscribe por ti cuando devuelves el Mono desde el controlador.","¿Por qué mi llamada no se ejecuta? Porque nadie hizo subscribe (o se descartó el Mono).",`Mono&lt;String&gt; m = Mono.fromSupplier(() -> llamar());
+// aquí todavía no pasó nada
+m.subscribe(System.out::println);  // ahora sí`],
+["map vs flatMap","map transforma el valor con una función normal. flatMap se usa cuando esa función devuelve otro Mono/Flux (otra operación asíncrona) y lo aplana dentro de la cadena.","¿Cuándo usas flatMap? Cuando dentro llamas a otro servicio o a una BD reactiva.",`repo.findById(id)                       // Mono&lt;Cuenta&gt;
+  .map(c -> c.getSaldo())               // valor simple
+  .flatMap(s -> antifraude.validar(s)); // devuelve Mono`],
+["No bloquees el event loop","WebFlux atiende miles de peticiones con pocos hilos. Un block() o un JDBC bloqueante detiene uno de esos hilos y puede degradar todo el servicio.","¿Qué haces si tienes una librería bloqueante? La aíslas con subscribeOn(Schedulers.boundedElastic()).",`Mono.fromCallable(() -> legado.consultar())  // bloqueante
+    .subscribeOn(Schedulers.boundedElastic());`]],
+"Microservicios resilientes":[
+["Circuit Breaker","Si un servicio falla seguido, se deja de llamarlo por un tiempo y se responde rápido con un fallback. Estados: cerrado (normal), abierto (corta) y semiabierto (prueba si ya se recuperó).","¿Qué pasa si el core bancario está caído? Se abre el circuito, respondes un fallback y no lo saturas.",`@CircuitBreaker(name = "core", fallbackMethod = "saldoCache")
+public Mono&lt;Saldo&gt; consultar(String cuenta){ ... }`],
+["SAGA","Una operación entre varios servicios se divide en pasos locales. Si uno falla, se ejecutan acciones compensatorias de los pasos anteriores, en vez de una transacción distribuida.","Debitaste pero falló el crédito: ¿qué haces? Compensas reponiendo el débito y dejas el estado auditable.",`1. Cuentas: debitar origen            OK
+2. Cuentas: acreditar destino        FALLA
+3. Compensación: reponer el débito   OK
+Estado de la transferencia: FALLIDA`],
+["Idempotencia","Repetir una operación produce el mismo efecto que hacerla una vez. En pagos los reintentos son inevitables, así que cada operación lleva una clave única.","¿Cómo evitas cobrar dos veces? Con una Idempotency-Key guardada junto al resultado.",`POST /transferencias
+Idempotency-Key: 7f3a-91c2
+// 2.ª vez con la misma clave
+// -> devuelve el resultado guardado, no repite`]],
+"Seguridad y OWASP":[
+["Inyección SQL","Ocurre cuando concatenas texto del usuario dentro de una consulta. Con parámetros, la entrada nunca se interpreta como código SQL.","¿Cómo la previenes? Con consultas parametrizadas (PreparedStatement o JPA), nunca concatenando.",`// Mal
+"select * from u where nombre='" + nombre + "'"
+
+// Bien
+@Query("select u from Usuario u where u.nombre = :n")`],
+["Manejo de secretos","Contraseñas y claves no van en el código ni en el repositorio. Se guardan en un gestor (Azure Key Vault) y se inyectan al arrancar.","¿Dónde guardas la clave de la BD? En Key Vault, accedido con una identidad administrada.",`# application.yml
+spring.datasource.password: \${DB_PASSWORD}  # viene de Key Vault`],
+["401 vs 403 y JWT","Autenticación: quién eres (401 si falla). Autorización: qué puedes hacer (403 si no tienes permiso). El JWT es un token firmado que el servicio valida sin consultar una sesión.","¿Cuándo 401 y cuándo 403? Sin token válido, 401; con token pero sin permiso, 403.",`@PreAuthorize("hasRole('CLIENTE')")
+@GetMapping("/cuentas/{id}/saldo")
+public Mono&lt;Saldo&gt; saldo(@PathVariable String id){ ... }`]],
+"Diseño de APIs REST":[
+["Códigos HTTP","El código comunica el resultado sin leer el body: 2xx éxito, 4xx error del cliente, 5xx error del servidor.","¿Qué devuelves si el JSON es inválido? ¿Y si el recurso ya existe? ¿Y si falla tu servidor?",`201 Created      recurso creado
+400 Bad Request  datos inválidos
+401 / 403        sin autenticar / sin permiso
+404 Not Found    no existe
+409 Conflict     duplicado o conflicto de estado
+500              falla del servidor`],
+["Idempotencia en HTTP","GET, PUT y DELETE son idempotentes; POST no. Por eso, en operaciones críticas con POST (pagos), se añade una clave de idempotencia.","¿Es PUT idempotente? Sí: reemplazar el mismo recurso dos veces deja el mismo estado.",`PUT  /clientes/10 {"nombre":"Ana"}   // repetir = mismo resultado
+POST /transferencias                 // repetir = otra transferencia`],
+["Diseño de recursos","Usa sustantivos en plural y una jerarquía lógica; la acción la da el método HTTP. Versiona la API (/v1) y documéntala con OpenAPI.","¿Cómo nombras la API para ver los movimientos de una cuenta? Evita verbos como /obtenerSaldo.",`GET  /v1/cuentas/{id}/movimientos?pagina=1
+POST /v1/transferencias`]],
+"WebFlux a fondo":[
+["subscribeOn vs publishOn","Controlan en qué hilo corre tu cadena. subscribeOn decide dónde arranca la suscripción (afecta desde el origen); publishOn cambia el hilo para los operadores que vienen después.","¿Qué diferencia hay entre subscribeOn y publishOn y para qué las usas? Para mover trabajo bloqueante fuera del event loop.",`Mono.fromCallable(() -> legado.consultar())
+    .subscribeOn(Schedulers.boundedElastic())  // el origen, en otro hilo
+    .map(this::transformar)
+    .publishOn(Schedulers.parallel())          // lo siguiente, en otro
+    .map(this::calcular);`],
+["Manejo de errores","Un try/catch no captura errores asíncronos. Se manejan dentro de la cadena: onErrorResume devuelve otro publisher, onErrorReturn un valor, onErrorMap traduce la excepción y retryWhen reintenta.","¿Cómo te recuperas si el servicio de antifraude falla? Con timeout, reintentos y onErrorResume con un fallback.",`antifraude.validar(tx)
+  .timeout(Duration.ofSeconds(2))
+  .retryWhen(Retry.backoff(2, Duration.ofMillis(200)))
+  .onErrorResume(e -> Mono.just(Resultado.REVISION_MANUAL));`],
+["Mono.zip y switchIfEmpty","Mono.zip lanza varios Mono a la vez y combina sus resultados cuando todos terminan; es más rápido que encadenarlos. switchIfEmpty ejecuta una alternativa si el Mono llega vacío.","¿Cómo consultas saldo y movimientos sin esperar uno por uno? Con Mono.zip.",`Mono.zip(saldoSvc.get(id), movSvc.ultimos(id))
+    .map(t -> new Resumen(t.getT1(), t.getT2()));
+
+repo.findById(id)
+    .switchIfEmpty(Mono.error(new NoEncontrado()));`]],
+"SAGA y mensajería":[
+["Coreografía vs orquestación","Coreografía: cada servicio reacciona a eventos de otros, sin jefe; es desacoplada pero difícil de seguir. Orquestación: un orquestador indica el siguiente paso; da más control y visibilidad, pero es un punto central.","¿Cuál eliges para una transferencia bancaria y por qué? Normalmente orquestación, por la trazabilidad y la auditoría.",`Orquestación:
+  Orquestador -> Cuentas.debitar    OK
+  Orquestador -> Cuentas.acreditar  FALLA
+  Orquestador -> Cuentas.reponer débito
+Coreografía:
+  Debitado (evento) -> Acreditar reacciona -> publica Acreditado`],
+["Patrón Outbox","Si guardas en la BD y luego publicas el mensaje, puede fallar entre ambos y perderse el evento. Con Outbox guardas el evento en la misma transacción local y un proceso aparte lo publica.","¿Cómo garantizas que no se pierda un evento al confirmar una transferencia?",`@Transactional
+void transferir(Tx t){
+  repo.save(t);
+  outbox.save(new Evento("TransferenciaCreada", t.id()));
+}
+// Otro proceso lee la tabla outbox y publica en Kafka`],
+["Consumidores idempotentes y DLQ","La mayoría de brokers entrega 'al menos una vez', así que un mensaje puede llegar repetido. El consumidor guarda el id procesado. Si un mensaje falla tras varios reintentos, va a una Dead Letter Queue para analizarlo.","¿Qué haces si llega dos veces el mismo mensaje? ¿Y si uno falla siempre?",`if (procesados.existe(msg.id())) return;   // ya procesado
+aplicar(msg);
+procesados.guardar(msg.id());
+// tras 3 fallos -> cola de errores (DLQ)`]],
+"Patrones de diseño a fondo":[
+["Factory y Builder","Factory decide qué clase concreta crear sin que el cliente la conozca. Builder arma objetos con muchos parámetros opcionales de forma legible e inmutable.","¿Cuándo usas Factory y cuándo Builder? Factory: varias implementaciones; Builder: muchos parámetros.",`PagoProcesador p = PagoFactory.para(TipoTarjeta.CREDITO);
+
+Cliente c = Cliente.builder()       // Lombok @Builder
+    .nombre("Ana").email("a@x.com").build();`],
+["Adapter vs Facade","Adapter traduce una interfaz a otra que el cliente espera, ideal para envolver un servicio SOAP legado. Facade ofrece una interfaz simple sobre un subsistema complejo. Adapter traduce, Facade simplifica.","¿Cómo integras un servicio SOAP del core sin contaminar tu dominio? Con un Adapter.",`class CoreSaldoAdapter implements SaldoPort {
+  private final CoreSoapClient soap;
+  public Saldo consultar(String cta){
+    return mapear(soap.getBalance(cta));  // SOAP -> dominio
+  }
+}`],
+["Proxy y Observer","Proxy controla el acceso a un objeto (Spring lo usa en @Transactional y AOP). Observer notifica a varios suscriptores cuando algo cambia y es la base de los eventos.","¿Dónde ves Proxy en Spring? ¿Cómo desacoplas enviar un correo al crear una cuenta? Con eventos (Observer).",`publisher.publishEvent(new CuentaCreada(id));
+
+@EventListener
+void enviarBienvenida(CuentaCreada e){ ... }`]],
+"Arquitectura y patrones II":[
+["Cache Aside","La aplicación consulta primero la caché; si no está, lee de la BD, guarda en caché y devuelve. Al modificar el dato hay que invalidar la caché para no servir datos viejos.","¿Cómo aceleras la consulta de datos que casi no cambian, como un catálogo de bancos?",`valor = cache.get(clave)
+si es null:
+    valor = bd.leer(clave)
+    cache.put(clave, valor, ttl = 10 min)
+retornar valor`],
+["CQRS y hexagonal","CQRS separa el modelo de escritura (comandos) del de lectura (consultas) para optimizar cada uno. Hexagonal pone el dominio al centro: los puertos son interfaces y los adaptadores (REST, JPA, Kafka) las implementan, así el negocio no depende de frameworks.","¿Qué ventaja da la arquitectura hexagonal? Dominio testeable y poder cambiar tecnología sin tocar el negocio.",`domain/    Transferencia, SaldoPort   (puerto)
+adapters/  SaldoJpaAdapter, TransferenciaController
+// El dominio no importa Spring ni JPA`],
+["Event-Driven","Los servicios se comunican publicando y consumiendo eventos, sin llamarse entre sí. Ganas desacople y escalabilidad; pierdes consistencia inmediata y depurar es más difícil.","¿Cuál es el trade-off de una arquitectura orientada a eventos?",`Cuentas publica: TransferenciaCompletada
+  -> Notificaciones envía el SMS
+  -> Auditoría registra el movimiento
+(Cuentas no conoce a ninguno de los dos)`]],
+"Bases de datos y SQL":[
+["Índices","Un índice es una estructura (normalmente un árbol B) que permite encontrar filas sin recorrer toda la tabla. Acelera las lecturas, pero cada INSERT o UPDATE debe mantenerlo y ocupa espacio.","Una consulta por número de cuenta tarda segundos. ¿Qué revisas? El plan de ejecución (EXPLAIN en PostgreSQL/MySQL, EXPLAIN PLAN en Oracle) y si hay índice en la columna del filtro.",`-- Lenta: recorre toda la tabla
+SELECT * FROM movimientos WHERE cuenta_id = 123;
+
+CREATE INDEX idx_mov_cuenta ON movimientos(cuenta_id);
+-- Ahora el plan de ejecución usa el índice`],
+["ACID y aislamiento","ACID: Atomicidad (todo o nada), Consistencia, Aislamiento (las transacciones concurrentes no se pisan) y Durabilidad. El nivel de aislamiento define qué anomalías se toleran: dirty read, non-repeatable read y phantom read.","¿Qué es un non-repeatable read? Leer dos veces la misma fila en una transacción y obtener valores distintos porque otra confirmó un cambio.",`T1: SELECT saldo FROM cuentas WHERE id=1;   -- 100
+T2: UPDATE cuentas SET saldo=50 WHERE id=1; COMMIT;
+T1: SELECT saldo FROM cuentas WHERE id=1;   -- 50 (cambió)
+-- Repeatable Read o Serializable lo evitan`],
+["JOINs y transacciones","INNER JOIN devuelve solo las filas con coincidencia en ambas tablas; LEFT JOIN conserva todas las de la izquierda y rellena con NULL. En una transferencia, el débito y el crédito van en una sola transacción para que ocurran ambos o ninguno.","¿Qué diferencia hay entre INNER y LEFT JOIN? Un caso de LEFT: listar clientes aunque no tengan cuentas.",`SELECT c.nombre, a.numero
+FROM clientes c
+LEFT JOIN cuentas a ON a.cliente_id = c.id;  -- incluye clientes sin cuenta
+
+BEGIN;
+UPDATE cuentas SET saldo = saldo - 100 WHERE id = 1;
+UPDATE cuentas SET saldo = saldo + 100 WHERE id = 2;
+COMMIT;`]],
+"Testing y calidad":[
+["TDD","Ciclo Red-Green-Refactor: escribes un test que falla, haces lo mínimo para que pase y refactorizas con la seguridad de que los tests te protegen. Empuja hacia diseños simples y desacoplados.","¿Cómo aplicas TDD en un caso real? Parto del comportamiento esperado, escribo el test, luego el código y después refactorizo.",`@Test
+void comisionPremiumEsCero(){
+  assertEquals(0, new Premium().calcular(1000));  // RED: aún no existe
+}
+// GREEN: implementas Premium.calcular -> return 0
+// REFACTOR: limpias sin romper el test`],
+["Mockito y tipos de prueba","Mockito simula las dependencias de la clase que pruebas (BD, APIs) para probar solo su lógica, rápido y sin infraestructura. when/thenReturn define respuestas y verify comprueba interacciones. Una prueba de integración, en cambio, prueba componentes reales juntos.","¿Qué diferencia hay entre prueba unitaria e integración? La unitaria aísla con mocks; la de integración usa componentes reales.",`@ExtendWith(MockitoExtension.class)
+class TransferenciaServiceTest {
+  @Mock CuentaRepo repo;
+  @InjectMocks TransferenciaService service;
+
+  @Test void falla_si_no_hay_saldo(){
+    when(repo.saldo(1L)).thenReturn(BigDecimal.TEN);
+    assertThrows(SaldoInsuficiente.class,
+      () -> service.transferir(1L, 2L, BigDecimal.valueOf(100)));
+    verify(repo, never()).guardar(any());
+  }
+}`],
+["SonarQube y quality gate","SonarQube analiza el código y mide bugs, vulnerabilidades, code smells, duplicación y cobertura. El quality gate son umbrales que, si no se cumplen, bloquean el pase en el pipeline.","Sonar bloquea tu PR. ¿Qué haces? Reviso el detalle, corrijo la causa y no bajo el umbral para pasar.",`Pipeline: build -> tests -> análisis Sonar -> quality gate
+El gate FALLA, por ejemplo, si:
+  - hay una vulnerabilidad nueva
+  - la cobertura del código nuevo es menor al umbral
+  - la duplicación supera el máximo permitido`]],
+"Liderazgo y entrevista":[
+["Code review que eleva al equipo","Un buen review se enfoca en el código, no en la persona: explica el porqué, propone alternativas y distingue lo obligatorio de lo opcional. El objetivo es que el equipo aprenda y se cumplan los estándares.","Un compañero entrega código que funciona pero rompe los estándares. ¿Cómo lo manejas?",`Comentario débil:   "Esto está mal."
+Comentario fuerte:  "Este método valida y guarda a la vez.
+  Si los separamos (SRP) será más fácil de probar.
+  ¿Lo revisamos juntos?"`],
+["Decisiones y plazos","Ante un desacuerdo técnico, compara trade-offs con criterios objetivos (requisitos, riesgo, costo, tiempo) y deja la decisión por escrito (ADR). Ante una fecha imposible, explica el riesgo con datos y propone alternativas de alcance o por fases.","El negocio pide en 2 semanas algo que toma 6. ¿Qué haces?",`"Para esa fecha podemos entregar consulta de saldo y
+ transferencias. Notificaciones y reportes van en una
+ segunda fase. Recortar pruebas subiría el riesgo de
+ errores en producción. ¿Priorizamos así?"`],
+["STAR, lo que no sabes y la IA","STAR ordena tus historias: Situación, Tarea, Acción y Resultado, con un dato medible y lo que hiciste tú. Si no sabes algo, admítelo y razona en voz alta. Si usas IA para programar, di que revisas, entiendes y pruebas todo lo que genera.","¿Usas IA al programar? Sí, como apoyo: reviso, entiendo, pruebo y valido seguridad antes de integrar.",`// Ejemplo ilustrativo: usa tus propios datos reales
+S: Las consultas de saldo tardaban 4 s en horas pico.
+T: Yo debía bajar la latencia sin cambiar el contrato.
+A: Detecté un N+1, usé join fetch y agregué caché.
+R: Bajó a 600 ms.`]],
+"Java moderno":[
+["Optional y records","Optional representa un valor que puede faltar y evita null y NPE. Un record (Java 16+) es una clase inmutable de datos con constructor, getters, equals, hashCode y toString generados.","¿Qué ventaja tiene un record? Menos boilerplate e inmutabilidad, ideal para DTOs.",`record CuentaDto(String numero, BigDecimal saldo) {}
+
+Optional&lt;Cuenta&gt; c = repo.buscar(id);
+String num = c.map(Cuenta::numero).orElse("N/A");`],
+["Streams","Un Stream procesa colecciones de forma declarativa: filter, map, reduce, collect. flatMap aplana streams anidados. Son perezosos: nada se ejecuta hasta la operación terminal.","¿Qué diferencia hay entre map y flatMap en un Stream? flatMap aplana cada elemento que produce a su vez un Stream.",`List&lt;String&gt; nombres = clientes.stream()
+    .filter(c -> c.activo())
+    .map(Cliente::nombre)
+    .toList();
+
+cuentas.stream().flatMap(c -> c.movimientos().stream());`],
+["Novedades de Java 17","Java 17 trae sealed classes (restringen quién puede heredar), switch como expresión, pattern matching en instanceof y text blocks. El pattern matching en switch llega estable en Java 21.","¿Qué aportan las sealed classes? Modelar un conjunto cerrado de tipos que el compilador puede verificar.",`sealed interface Pago permits Tarjeta, Transferencia {}
+
+if (pago instanceof Tarjeta t) { cobrar(t); }  // pattern matching
+
+String etiqueta = switch (estado) {            // switch como expresión
+  case APROBADO  -> "OK";
+  case RECHAZADO -> "Falló";
+};`]],
+"Java avanzado":[
+["Concurrencia y volatile","Cuando varios hilos tocan el mismo dato aparecen las race conditions. volatile garantiza visibilidad, pero no atomicidad: count++ son tres pasos (leer, sumar, escribir). Para eso usa AtomicInteger, synchronized o locks.","Dos hilos incrementan un contador y se pierden incrementos. ¿Por qué y cómo lo arreglas?",`int count = 0;
+count++;                                  // no es atómico
+
+AtomicInteger seguro = new AtomicInteger();
+seguro.incrementAndGet();                 // seguro entre hilos`],
+["HashMap, equals y hashCode","HashMap usa hashCode para elegir el bucket y equals para comparar dentro de él. Si dos objetos son iguales deben tener el mismo hashCode: si sobreescribes uno, sobreescribe el otro.","¿Qué pasa si sobreescribes equals pero no hashCode? El objeto puede no encontrarse en un HashMap.",`record ClaveCuenta(String banco, String numero) {}
+// El record ya genera equals y hashCode consistentes
+
+Map&lt;ClaveCuenta, Saldo&gt; mapa = new HashMap&lt;&gt;();`],
+["Memoria, GC y virtual threads","El GC libera lo que ya no es alcanzable. Un memory leak ocurre cuando quedan referencias vivas (por ejemplo una colección estática que solo crece). Los virtual threads (Java 21) permiten miles de hilos ligeros para I/O bloqueante.","¿Cómo detectas un memory leak? Con un heap dump o un profiler, viendo qué objetos se acumulan y quién los referencia.",`static final List&lt;Sesion&gt; CACHE = new ArrayList&lt;&gt;();
+CACHE.add(sesion);   // nunca se limpia -> leak
+
+try (var ex = Executors.newVirtualThreadPerTaskExecutor()) {
+  ex.submit(() -> llamarServicio());   // Java 21
+}`]],
+"Spring Cloud y Security":[
+["Gateway y Config","Spring Cloud Gateway es la puerta de entrada única: enruta, aplica filtros, rate limiting y seguridad. Spring Cloud Config centraliza la configuración externa de los microservicios para cambiarla sin recompilar.","¿Para qué usas un API Gateway? Para no repetir lo transversal (auth, límites, enrutamiento) en cada servicio.",`spring:
+  cloud:
+    gateway:
+      routes:
+        - id: cuentas
+          uri: lb://cuentas-service
+          predicates:
+            - Path=/v1/cuentas/**`],
+["Descubrimiento de servicios","En contenedores las IPs cambian. Con descubrimiento de servicios (Eureka, Consul) cada servicio se registra y los demás lo localizan por nombre. En Kubernetes lo resuelve su propio DNS.","¿Cómo se encuentran los servicios sin IPs fijas? Por nombre lógico, resuelto por el registro o por DNS.",`// Se llama por nombre lógico, no por IP
+webClient.get()
+  .uri("http://cuentas-service/v1/saldo/{id}", id)
+  .retrieve().bodyToMono(Saldo.class);`],
+["OAuth2, JWT y BCrypt","En OAuth2 el servidor de autorización emite el access token; tu API (resource server) solo lo valida. El JWT va firmado. Las contraseñas se guardan con BCrypt: es lento a propósito y lleva salt, lo que frena la fuerza bruta.","¿Quién emite el token y quién lo valida? ¿Por qué BCrypt y no SHA-256 simple?",`@Bean
+SecurityFilterChain chain(HttpSecurity http) throws Exception {
+  return http
+    .authorizeHttpRequests(a -> a.anyRequest().authenticated())
+    .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
+    .build();
+}`]],
+"Git, Maven y CI":[
+["Git: merge, rebase y revert","Merge une historias con un commit de unión. Rebase reaplica tus commits sobre otra base para un historial lineal (no lo uses en ramas compartidas). Revert crea un commit que deshace otro sin reescribir el historial.","Subiste un error a una rama compartida. ¿Qué haces? git revert, no un reset con force push.",`git rebase main        # mi rama, historial lineal
+git revert abc1234     # deshace un commit ya publicado
+# Evitar: git push --force en ramas compartidas`],
+["Maven","Maven gestiona dependencias y el ciclo de vida del build. mvn clean install limpia, compila, ejecuta tests y empaqueta en el repositorio local; deploy lo publica en Nexus. El scope test deja una dependencia fuera del artefacto final.","¿Qué hace mvn clean install y qué indica el scope test?",`&lt;dependency&gt;
+  &lt;groupId&gt;org.mockito&lt;/groupId&gt;
+  &lt;artifactId&gt;mockito-core&lt;/artifactId&gt;
+  &lt;scope&gt;test&lt;/scope&gt;   &lt;!-- solo para pruebas --&gt;
+&lt;/dependency&gt;`],
+["Jenkins y BDD","Un Jenkinsfile define el pipeline como código, versionado con el proyecto. BDD describe el comportamiento en escenarios Given-When-Then que entienden negocio, desarrollo y QA.","¿Qué etapas tiene un pipeline típico? ¿Qué es BDD?",`pipeline {
+  agent any
+  stages {
+    stage('Build') { steps { sh 'mvn clean package' } }
+    stage('Test')  { steps { sh 'mvn test' } }
+    stage('Sonar') { steps { sh 'mvn sonar:sonar' } }
+  }
+}
+// BDD: Given saldo 100 / When transfiero 150 / Then se rechaza`]],
+"Azure y CI/CD":[
+["AKS y ACR","AKS es Kubernetes administrado por Azure: ejecuta y escala tus contenedores. ACR es el registro donde se guardan y versionan las imágenes que AKS descarga.","¿Qué diferencia hay entre ACR y AKS? ACR guarda las imágenes; AKS las ejecuta.",`docker build -t miacr.azurecr.io/cuentas:1.0 .
+docker push miacr.azurecr.io/cuentas:1.0   # queda en ACR
+kubectl apply -f deployment.yaml           # AKS la descarga y ejecuta`],
+["API Management y Key Vault","Azure API Management publica, protege y gobierna APIs (autenticación, rate limit, políticas, versionado). Key Vault guarda secretos, claves y certificados, y se accede con identidad administrada, sin contraseñas en el código.","¿Dónde pones el límite de peticiones? En API Management. ¿Y los secretos? En Key Vault.",`Cliente -> API Management (auth, rate limit)
+        -> AKS (microservicios)
+        -> Key Vault (secretos, con identidad administrada)`],
+["Pipeline CI/CD","CI integra y valida cada cambio automáticamente; CD lo despliega. El orden importa: la calidad se valida antes de generar el artefacto y desplegarlo.","¿Cómo es tu pipeline desde el commit hasta producción?",`commit -> build -> tests -> Sonar (quality gate)
+       -> artefacto (Nexus / imagen en ACR)
+       -> despliegue en QA -> aprobación -> producción`]],
+"Azure II y observabilidad":[
+["Functions y Logic Apps","Azure Functions ejecuta código corto basado en eventos, escala bajo demanda y se paga por ejecución. Logic Apps orquesta flujos de integración con conectores y poco código.","¿Cuándo Function y cuándo Logic App? Function para lógica en código; Logic App para integrar sistemas con flujos.",`Function:  llega un archivo a Storage -> lo procesa y guarda
+Logic App: llega un correo -> llama a una API -> notifica en Teams`],
+["Los tres pilares","Observabilidad = logs (qué pasó), métricas (cuánto y con qué frecuencia) y trazas (por dónde pasó una petición). Un trace ID permite seguir una petición entre microservicios.","¿Cómo depuras un error que cruza 4 servicios? Con el trace ID en los logs.",`[trace=ab12] gateway  -> POST /transferencias
+[trace=ab12] cuentas  -> débito OK
+[trace=ab12] notific. -> ERROR timeout
+// Buscas por trace=ab12 y ves todo el recorrido`],
+["Plan de monitoreo del pase","Antes del pase: alertas y dashboards listos y un plan de rollback. Durante: vigilas errores, latencia y saturación. Después: validas indicadores y logs unos días. Los golden signals son latencia, tráfico, errores y saturación.","¿Qué incluye tu plan de monitoreo de un pase a producción?",`ANTES:    alertas configuradas, rollback definido
+DURANTE:  errores 5xx, latencia p95, CPU y memoria
+DESPUÉS:  comparar con la línea base y revisar logs`]]
+};
+function study(i,k){
+  const s=STUDY[U[i].t],c=s[k],last=k===s.length-1;
+  const m=$('#modal');m.className='on';
+  m.innerHTML=`<div class="card"><div class="top"><button class="x" aria-label="Salir" onclick="closeM()">✕</button><div class="pb"><i style="width:${(k+1)/s.length*100}%"></i></div><span class="st">📖 ${k+1}/${s.length}</span></div><h2>${c[0]}</h2><div class="box"><b>Concepto</b><p>${c[1]}</p></div><div class="box q"><b>Te pueden preguntar</b><p>${c[2]}</p></div><div class="box"><b>Ejemplo práctico</b>${P(c[3])}</div><div class="nav">${k?`<button class="sec" onclick="study(${i},${k-1})">←</button>`:''}<button class="go" onclick="${last?`quiz(${i})`:`study(${i},${k+1})`}">${last?'¡A practicar! ✍️':'Siguiente →'}</button></div></div>`;
+  m.scrollTop=0;
+}
+function start(i){STUDY[U[i].t]?study(i,0):quiz(i)}
+
 /* ===== EXPORTAR / IMPORTAR PROGRESO ===== */
 function exp(){
   const a=document.createElement('a');
