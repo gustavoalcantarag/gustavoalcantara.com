@@ -14,6 +14,7 @@ const recentResultsGrid = document.querySelector("#recent-results-grid");
 const manualForm = document.querySelector("#manual-form");
 const manualLeague = document.querySelector("#manual-league");
 const manualAnalyzeButton = document.querySelector("#manual-analyze-button");
+let availableLeagues = [];
 
 function setFeedback(message) {
     feedback.textContent = message;
@@ -39,6 +40,14 @@ function addOption(select, value, label) {
     option.value = value;
     option.textContent = label;
     select.append(option);
+}
+
+function normalizeLeagueName(name) {
+    return name.normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
 }
 
 function addResult(title, lines, className = "") {
@@ -133,18 +142,12 @@ function addRecentResults(prediction) {
 async function loadLeagues() {
     try {
         const { leagues } = await requestJson("/leagues");
+        availableLeagues = leagues;
         leagueSelect.replaceChildren();
         addOption(leagueSelect, "", "Selecciona una liga");
         leagues.forEach((league) => addOption(leagueSelect, league.id, league.name));
-        const leagueOptions = document.querySelector("#league-options");
-        leagueOptions.replaceChildren();
-        leagues.forEach((league) => {
-            const option = document.createElement("option");
-            option.value = league.name;
-            option.dataset.id = league.id;
-            leagueOptions.append(option);
-        });
     } catch (error) {
+        availableLeagues = [];
         leagueSelect.replaceChildren();
         addOption(leagueSelect, "", "Ligas no disponibles");
         setFeedback(error.message);
@@ -270,10 +273,12 @@ async function analyzeManual(event) {
     const away = document.querySelector("#manual-away").value.trim();
     if (!manualForm.reportValidity()) return;
 
-    const matchingLeague = [...document.querySelector("#league-options").options]
-        .find((option) => option.value.toLocaleLowerCase() === league.toLocaleLowerCase());
+    const normalizedLeague = normalizeLeagueName(league);
+    const matchingLeague = availableLeagues.find(
+        (option) => normalizeLeagueName(option.name) === normalizedLeague
+    );
     const params = new URLSearchParams({ league, home, away });
-    if (matchingLeague?.dataset.id) params.set("leagueId", matchingLeague.dataset.id);
+    if (matchingLeague?.id) params.set("leagueId", matchingLeague.id);
 
     manualAnalyzeButton.disabled = true;
     predictionPanel.hidden = true;

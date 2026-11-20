@@ -37,11 +37,36 @@
             <button id="analyze-button" type="button" disabled>Analizar partido</button>
             <div class="manual-entry">
                 <h3>¿No aparece el partido?</h3>
-                <p>Ingresa la competición y los equipos para buscar un pronóstico sin depender de la lista de encuentros.</p>
+                <p>Selecciona la competición e ingresa los equipos para buscar un pronóstico sin depender de la lista de encuentros.</p>
                 <form id="manual-form">
                     <label for="manual-league">Liga o competición</label>
-                    <input id="manual-league" name="league" list="league-options" maxlength="100" autocomplete="off" required>
-                    <datalist id="league-options"></datalist>
+                    <select id="manual-league" name="league" required>
+                        <option value="">Selecciona una competición</option>
+                        <option value="Brasileirão">Brasileirão</option>
+                        <option value="Bundesliga Alemania">Bundesliga Alemania</option>
+                        <option value="Champions League UEFA">Champions League UEFA</option>
+                        <option value="Concacaf Champions Cup">Concacaf Champions Cup</option>
+                        <option value="Conference League UEFA">Conference League UEFA</option>
+                        <option value="Copa América">Copa América</option>
+                        <option value="Copa del Mundo FIFA">Copa del Mundo FIFA</option>
+                        <option value="Copa del Rey España">Copa del Rey España</option>
+                        <option value="Copa Libertadores">Copa Libertadores</option>
+                        <option value="Copa Sudamericana">Copa Sudamericana</option>
+                        <option value="EFL Cup Inglaterra">EFL Cup Inglaterra</option>
+                        <option value="Eurocopa">Eurocopa</option>
+                        <option value="Europa League UEFA">Europa League UEFA</option>
+                        <option value="FA Cup Inglaterra">FA Cup Inglaterra</option>
+                        <option value="La Liga España">La Liga España</option>
+                        <option value="Liga 1 Perú">Liga 1 Perú</option>
+                        <option value="Liga Profesional Argentina">Liga Profesional Argentina</option>
+                        <option value="Ligue 1 Francia">Ligue 1 Francia</option>
+                        <option value="MLS">MLS</option>
+                        <option value="Nations League UEFA">Nations League UEFA</option>
+                        <option value="Premier League Inglaterra">Premier League Inglaterra</option>
+                        <option value="Serie A Italia">Serie A Italia</option>
+                        <option value="Supercopa de España">Supercopa de España</option>
+                        <option value="Supercopa de la UEFA">Supercopa de la UEFA</option>
+                    </select>
 
                     <label for="manual-home">Equipo local (A)</label>
                     <input id="manual-home" name="home" maxlength="100" autocomplete="off" required>
